@@ -1,5 +1,5 @@
 
-import { IconAlert } from "../../lib/icons"
+import { AlertTriangle } from "lucide-react"
 import { DataReadout } from "../primitives/DataReadout"
 
 type FirstAlertBannerProps = {
@@ -49,7 +49,7 @@ export function FirstAlertBanner({
   return (
     <div className="reticle-corner border border-outline-variant bg-surface-container-low p-3.5">
       <div className="flex items-start gap-3">
-        <IconAlert
+        <AlertTriangle
           size={20}
           className="mt-0.5 shrink-0 text-primary"
         />
@@ -74,3 +74,4 @@ export function FirstAlertBanner({
     </div>
   )
 }
+
