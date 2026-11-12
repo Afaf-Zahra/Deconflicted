@@ -1,0 +1,156 @@
+[
+  {
+    "seq": 0,
+    "ts": "2026-03-04T03:44:12Z",
+    "kind": "config_anchor",
+    "payload_hash": "bee82b2fb2ff5f5c930d20915456cf4ba547c77d2b043674c229ccad7ee223c5",
+    "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+    "entry_hash": "8bb5a58b155b0de0dbed543a8a6015c9e4a455aafc2f0826f6a2690bf35d5857",
+    "signatures": [
+      {
+        "node": "node-a",
+        "sig": "8a0e53f7f02d88b7ccf823b8e2c21a8e48e6b5d11be1be5a0adcff74662de79c52a07a75923c6b08e12b8899cde06e4fdbdf28e45554993e504d14b190dc740f"
+      },
+      {
+        "node": "node-b",
+        "sig": "1eb7bc85c18277e38cb8a52fd719102e9106cc89d24781b2568cbd31a3b9d96e638d2b5d6eaccef924fa2e52ac126ba616690be78074643ece10dc495c099306"
+      },
+      {
+        "node": "node-c",
+        "sig": "53af677d835135ca9ddea9a2fbb5e70d1d2d90140f9c6cd324735e67315b79b0e23c67bc2193d1ee9c8c56f830d62e1a97e605fd68235972f0d374e989bec10d"
+      }
+    ]
+  },
+  {
+    "seq": 1,
+    "ts": "2026-03-04T03:44:27Z",
+    "kind": "detection",
+    "payload_hash": "f031db8447d32d831de7a05669c3686ec547115cba4a7b8fafb05b8d811c27bc",
+    "prev_hash": "8bb5a58b155b0de0dbed543a8a6015c9e4a455aafc2f0826f6a2690bf35d5857",
+    "entry_hash": "09becc01bdde69dcaab4745f2b0ea309e4b551d80fb68b443f71a2be531396ce",
+    "signatures": [
+      {
+        "node": "node-a",
+        "sig": "a897155f9283d35acb913f2870ea50f96448e15d5e3daaae8b94fa8a012a34710a1cad50c6f6bda63636722d6bb60a9765b2bfcb91db8affa7f9bb152bd2a400"
+      },
+      {
+        "node": "node-b",
+        "sig": "b0b227529871d1aadab1eed5e6bd61db11b1b267d0d42f10b38c8438794f4d261f736e1486ba51cf26647a40cc7856f9e8e2f162986d3b3539a31d1cd1e4e000"
+      },
+      {
+        "node": "node-c",
+        "sig": "fc741ed663b81bd9d8c4e486e65b2126ce63e538aa9780ce6a1764b1759c3b31b9558a35db5fca79f4d8f0b2776e3546f3bac342f4b31d7eac4c37b24b416e09"
+      }
+    ]
+  },
+  {
+    "seq": 2,
+    "ts": "2026-03-04T03:44:42Z",
+    "kind": "detection",
+    "payload_hash": "f87454ab16fd26490ecee31214afaa16b8ce3ce4a796fc33ed9897bf7b6cb26b",
+    "prev_hash": "09becc01bdde69dcaab4745f2b0ea309e4b551d80fb68b443f71a2be531396ce",
+    "entry_hash": "5792931de429ac24e89200d5e791b54baf1a745cc0d378ddf6c36cc11b7ef119",
+    "signatures": [
+      {
+        "node": "node-a",
+        "sig": "99c3fe08562002b9a54ebbc17174016a5fb806032bd32184095218382e2b05d164119219877e735445643260c4b999545f2c882119ef41afaf1291d7633abf09"
+      },
+      {
+        "node": "node-b",
+        "sig": "1af4ee01831a0893d030e89b526384a0cb47b6531401089cc7a45de827bea98f5e87be3fd3fa244f9166f1c6881ce1c018fcaf55e8ba7a69a7e85cc035dc040c"
+      },
+      {
+        "node": "node-c",
+        "sig": "a6d8e56c7738220d3f85ef699ac33b580715340f9cbd4bf012c412a2cc6247f715445f71a979c91a16f0e8fc04de519afff9eea7b073782000d4a888ba3c600c"
+      }
+    ]
+  },
+  {
+    "seq": 3,
+    "ts": "2026-03-04T03:44:57Z",
+    "kind": "response_decision",
+    "payload_hash": "f70543cabb8f3b19991bb636dffd540fd3118f8beb085d6e625fc50d5829a244",
+    "prev_hash": "5792931de429ac24e89200d5e791b54baf1a745cc0d378ddf6c36cc11b7ef119",
+    "entry_hash": "ad374e5fda2f691ccc01a7e40778d2f063e4fb4d948bb174b9709c8c129c6568",
+    "signatures": [
+      {
+        "node": "node-a",
+        "sig": "2c21eaf75784d593c90479de9c2d76b179593b9fbca1e3e83b22c58e7487303a30277b066667fafd0691b89cc487214fce42c1965a329d6da0f36d9eb2a0d306"
+      },
+      {
+        "node": "node-b",
+        "sig": "331beb7a6423036206c99f17e1bc60c8e0e5841414184cdd187acf2fc1770a97e9c7cb416df7366bcf70de2c9f49ec603194a0d724ba6bdb4c8f358a36a1ee0d"
+      },
+      {
+        "node": "node-c",
+        "sig": "a2706f8b66c64aa249571059b9ce8f02856b5644b0e73b474b7df4749282ef7898538ac523964f05144f24ea93f57ca72c11da58d17dd21a1334c1fce199800e"
+      }
+    ]
+  },
+  {
+    "seq": 4,
+    "ts": "2026-03-04T03:45:12Z",
+    "kind": "response_decision",
+    "payload_hash": "e10b43210066f61223db58be4b69a1d5f46aa0c9e0351a818afabd1293f3ad77",
+    "prev_hash": "ad374e5fda2f691ccc01a7e40778d2f063e4fb4d948bb174b9709c8c129c6568",
+    "entry_hash": "824a39109bc342f67f6844d6beef2de7637046c1ed325cbe0d2c9398f945a3fa",
+    "signatures": [
+      {
+        "node": "node-a",
+        "sig": "c5923ff07587975d270a6d714a0b30a44cf9d7d2da293befe6caca520ce464026d2cc55aeb495c24281dcafd9069fc3b3cd04924159f745b6dd0e82a3f7bbf02"
+      },
+      {
+        "node": "node-b",
+        "sig": "b8e3e524c52fb029b8a9d854b5180cf1257d877b5893a11294d6fadc137b1dbc2353a89bed85c567933fdf708c1ca118817e7d2a485299e73f18b073e8db2c06"
+      },
+      {
+        "node": "node-c",
+        "sig": "3bdbf2c0fdf0fd2abead6633b79a0d6dec5c9cfc7f331c158d2fe4bfe5a501e16a18d761d09414ef9375625e31c0cc34f719656d60be0d85151086ae6316d20d"
+      }
+    ]
+  },
+  {
+    "seq": 5,
+    "ts": "2026-03-04T03:45:27Z",
+    "kind": "response_decision",
+    "payload_hash": "d7863d206ed06d6e6bc2bd8e2eff163b8cc91ee3769718ea0b4313b5488466a9",
+    "prev_hash": "824a39109bc342f67f6844d6beef2de7637046c1ed325cbe0d2c9398f945a3fa",
+    "entry_hash": "14ecb50e066c6f9e059051db4e2203e193515212aff3ddcacaec9dd2256f585f",
+    "signatures": [
+      {
+        "node": "node-a",
+        "sig": "1bf57573a8f75577d6c6a92cf84dc62e2d9acc677c953451a88068ca12d57d5a35de476c8c857e51d29e4bb7317f1dbeb07e19510a6695f6e867f43e06a49602"
+      },
+      {
+        "node": "node-b",
+        "sig": "e61fd346912fa5a885a65513ab2f7442493077f8ca32bf7ba239a2c6445960339bf1ae2d18d428f8ffe80f364cb9c2def5932bad986ad55e58214d2aab396e0b"
+      },
+      {
+        "node": "node-c",
+        "sig": "5b1861dda69bef2ea32f8c232b23f8c85dcb6ce6c53d5967146c9c5b0820425cd1d1af151d1e624ce11f50f290e61df392a8ac345c74dfda51eaec3be98c330e"
+      }
+    ]
+  },
+  {
+    "seq": 6,
+    "ts": "2026-03-04T03:45:42Z",
+    "kind": "approval",
+    "payload_hash": "f51c9914e741745ffaa921d242541231195629c875e1b41306b2b7796b62fbfa",
+    "prev_hash": "14ecb50e066c6f9e059051db4e2203e193515212aff3ddcacaec9dd2256f585f",
+    "entry_hash": "7cf9d911cf6777e714ba4913cf8676daf610d70eb010caaff2cfa572df75b6a3",
+    "signatures": [
+      {
+        "node": "node-a",
+        "sig": "da634eebc5d557c603714e9d99041c025a4a7e837293d7c61bb17eeb6d6d328fc600dbafca68a0f7101ba541abdbbe1bde11f63ac6ac689a468bac43b2a87802"
+      },
+      {
+        "node": "node-b",
+        "sig": "a5630563e53a3aba26f4653d1a334f96b71e29ed5a2d16073a78fa0bfa3f2fa03d725fac192cf5ed1cb1acccd2e5a5048f318522aaa22ac2a4fc06148e64f909"
+      },
+      {
+        "node": "node-c",
+        "sig": "a5ff47b3a03aac374cae40dc2a2ca850db2e8b8f17e6412c8e11347b4067def811db5be24d3899e79ca2362372a35e4408b10e5dee3f5c80d2ebcb2402ba1704"
+      }
+    ]
+  }
+]

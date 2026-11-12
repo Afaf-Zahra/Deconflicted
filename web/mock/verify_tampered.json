@@ -1,0 +1,15 @@
+{
+  "ok": false,
+  "checked": 7,
+  "errors": [
+    {
+      "seq": 4,
+      "reason": "payload_hash_mismatch"
+    }
+  ],
+  "heads": {
+    "node-a": "7cf9d911cf6777e714ba4913cf8676daf610d70eb010caaff2cfa572df75b6a3",
+    "node-b": "7cf9d911cf6777e714ba4913cf8676daf610d70eb010caaff2cfa572df75b6a3",
+    "node-c": "7cf9d911cf6777e714ba4913cf8676daf610d70eb010caaff2cfa572df75b6a3"
+  }
+}
