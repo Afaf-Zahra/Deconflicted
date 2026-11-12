@@ -1,0 +1,19 @@
+{
+ "tokens": [
+  "<pad>",
+  "<unk>",
+  "auth:logon",
+  "net:flow",
+  "net:http",
+  "net:smb",
+  "net:smb_admin",
+  "ot:read",
+  "ot:write_setpoint",
+  "proc:backup",
+  "proc:nltest",
+  "proc:powershell",
+  "proc:powershell_script",
+  "proc:rsync",
+  "proc:wuauclt"
+ ]
+}
