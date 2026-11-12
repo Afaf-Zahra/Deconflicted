@@ -35,7 +35,12 @@ export interface ResponsePreview {
   before_trace: TracePoint[];
   after_trace: TracePoint[];
   violations: Violation[];
-  safer_options: string[];
+  safer_options: {
+    id: string;
+    kind: string;
+    target: string;
+    params: Record<string, unknown>;
+  }[];
   decision: "allow" | "downgrade" | "block";
   reason: string;
 }

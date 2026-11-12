@@ -1,6 +1,6 @@
 # QA Notes
 
-## Fresh clone demo
+## Current demo check
 
 ### Problem 1: `make demo` fails immediately
 
@@ -14,20 +14,60 @@ Result:
 
 The demo does not start because the Makefile reports a syntax error at line 10.
 
-### Problem 2: Web frontend is missing from the fresh clone
+The Makefile was not modified because it is outside the allowed work paths.
 
-The fresh clone contains a `web/` directory with only the `mock/` directory and mock JSON files.
+## Frontend checks
 
-There is no `web/package.json` and no web source tree.
-
-The Makefile references web commands for lint, tests, and build, but the required frontend package and source files are not present in the fresh clone.
-
-### Passing check
+### Lint
 
 Command:
 
-`python -m pytest tests -q`
+`cd web && npm run lint`
 
 Result:
 
-`11 passed in 0.06s`
+`Found 4 warnings and 0 errors.`
+
+Lint completed successfully with no errors.
+
+The warnings are React Compiler guidance about state updates inside effects.
+
+### Tests
+
+Command:
+
+`cd web && npm test`
+
+Result:
+
+`9 passed (9)` test files and `37 passed (37)` tests.
+
+### Production build
+
+Command:
+
+`cd web && npm run build`
+
+Result:
+
+Build completed successfully.
+
+Vite reported a chunk-size warning for a JavaScript asset larger than 500 kB, but the build succeeded.
+
+### Offline check
+
+Command:
+
+`cd web && sh scripts/check_offline.sh`
+
+Result:
+
+`Offline check passed.`
+
+The offline check builds the UI and checks the generated `dist` output for external URL and font CDN references.
+
+## QA summary
+
+The frontend lint, test suite, production build, and offline check pass.
+
+The remaining QA issue is the existing `make demo` Makefile syntax error.

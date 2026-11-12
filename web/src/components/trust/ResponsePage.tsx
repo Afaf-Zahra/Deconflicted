@@ -472,7 +472,7 @@ export function ResponsePage({ incidentId }: ResponsePageProps) {
                     <div className="space-y-2 p-3">
                       {preview.safer_options.map((option) => (
                         <div
-                          key={option}
+                          key={option.id}
                           className="border border-outline-variant bg-surface-container-low p-2.5"
                         >
                           <div className="flex items-start gap-2">
@@ -481,9 +481,14 @@ export function ResponsePage({ incidentId }: ResponsePageProps) {
                               className="mt-0.5 shrink-0 text-secondary-fixed-dim"
                             />
 
-                            <span className="font-mono text-[10px] leading-relaxed text-on-surface">
-                              {option}
-                            </span>
+                            <div className="font-mono text-[10px] leading-relaxed text-on-surface">
+                              <div>
+                                {option.kind} → {option.target}
+                              </div>
+                              <div className="text-on-surface-variant">
+                                {JSON.stringify(option.params)}
+                              </div>
+                            </div>
                           </div>
                         </div>
                       ))}

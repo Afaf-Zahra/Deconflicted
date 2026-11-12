@@ -1,31 +1,28 @@
-/**
- * Graph, Response, Ledger and Decoys tabs. These are placeholders with the agreed interface;
- * the real pages replace them. Keep the export names and the `incidentId` prop exactly as they are.
- */
+import { TopologyGraph } from "../../components/trust/TopologyGraph"
+import { ResponsePage as ResponseTrustPage } from "../../components/trust/ResponsePage"
+import { LedgerPage as LedgerTrustPage } from "../../components/trust/LedgerPage"
+import { DecoysPage as DecoysTrustPage } from "../../components/trust/DecoysPage"
+
 export interface TrustPageProps {
   incidentId: string | null
 }
 
-function Placeholder({ name }: { name: string }) {
-  return (
-    <section className="flex flex-1 items-center justify-center p-6 font-mono text-[13px] text-on-surface-variant">
-      {name}: not built yet
-    </section>
-  )
+export function GraphPage({ incidentId }: TrustPageProps) {
+  if (!incidentId) return null
+  return <TopologyGraph incidentId={incidentId} />
 }
 
-export function GraphPage(_props: TrustPageProps) {
-  return <Placeholder name="incident graph" />
+export function ResponsePage({ incidentId }: TrustPageProps) {
+  if (!incidentId) return null
+  return <ResponseTrustPage incidentId={incidentId} />
 }
 
-export function ResponsePage(_props: TrustPageProps) {
-  return <Placeholder name="response preview" />
+export function LedgerPage({ incidentId }: TrustPageProps) {
+  if (!incidentId) return null
+  return <LedgerTrustPage incidentId={incidentId} />
 }
 
-export function LedgerPage(_props: TrustPageProps) {
-  return <Placeholder name="ledger" />
-}
-
-export function DecoysPage(_props: TrustPageProps) {
-  return <Placeholder name="decoys" />
+export function DecoysPage({ incidentId }: TrustPageProps) {
+  if (!incidentId) return null
+  return <DecoysTrustPage incidentId={incidentId} />
 }

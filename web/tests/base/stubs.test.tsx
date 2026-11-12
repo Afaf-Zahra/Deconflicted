@@ -11,16 +11,30 @@ describe("page stubs keep the agreed interface", () => {
   })
 
   it("trust exports the four pages and each takes incidentId", () => {
-    for (const name of ["GraphPage", "ResponsePage", "LedgerPage", "DecoysPage"] as const) {
-      expect(typeof trust[name], name).toBe("function")
-      const Page = trust[name]
-      const { unmount } = render(<Page incidentId="INC-0042" />)
-      expect(screen.getByText(/not built yet/)).toBeInTheDocument()
-      unmount()
-      const second = render(<Page incidentId={null} />)
-      expect(screen.getByText(/not built yet/)).toBeInTheDocument()
-      second.unmount()
-    }
+    expect(typeof trust.GraphPage).toBe("function")
+    expect(typeof trust.ResponsePage).toBe("function")
+    expect(typeof trust.LedgerPage).toBe("function")
+    expect(typeof trust.DecoysPage).toBe("function")
+
+    const graph = render(<trust.GraphPage incidentId="INC-0042" />)
+    expect(screen.getByText("Incident Graph")).toBeInTheDocument()
+    graph.unmount()
+
+    const response = render(<trust.ResponsePage incidentId="INC-0042" />)
+    expect(screen.getByText("Response Preview")).toBeInTheDocument()
+    response.unmount()
+
+    const ledger = render(<trust.LedgerPage incidentId="INC-0042" />)
+    expect(screen.getByText("Ledger")).toBeInTheDocument()
+    ledger.unmount()
+
+    const decoys = render(<trust.DecoysPage incidentId="INC-0042" />)
+    expect(screen.getByText("Decoys")).toBeInTheDocument()
+    decoys.unmount()
+
+    const graphWithoutIncident = render(<trust.GraphPage incidentId={null} />)
+    expect(graphWithoutIncident.container).toBeEmptyDOMElement()
+    graphWithoutIncident.unmount()
   })
 
   it("trust exports nothing else that a page would have to remove", () => {
