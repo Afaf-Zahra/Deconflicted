@@ -7,7 +7,7 @@ describe("page stubs keep the agreed interface", () => {
   it("analyst exports AnalystPage and renders with the agreed props", () => {
     expect(typeof analyst.AnalystPage).toBe("function")
     render(<analyst.AnalystPage selectedIncidentId={null} onSelectIncident={vi.fn()} onOpenResponse={vi.fn()} />)
-    expect(screen.getByText(/not built yet/)).toBeInTheDocument()
+    expect(screen.getByText(/Loading incidents/)).toBeInTheDocument()
   })
 
   it("trust exports the four pages and each takes incidentId", () => {
@@ -28,3 +28,4 @@ describe("page stubs keep the agreed interface", () => {
     expect(Object.keys(analyst)).toEqual(["AnalystPage"])
   })
 })
+
