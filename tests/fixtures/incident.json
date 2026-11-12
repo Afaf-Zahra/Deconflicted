@@ -1,0 +1,32 @@
+{
+  "id": "INC-0042",
+  "title": "Admin credentials used from ws-help-01, ends in a PLC setpoint write",
+  "status": "open",
+  "severity": "critical",
+  "first_event_ts": "2026-03-04T03:40:00Z",
+  "first_alert_ts": "2026-03-04T03:44:12Z",
+  "entities": ["host:ws-help-01","user:alice","host:dc-01","decoy:dc-decoy-01","host:file-01","host:eng-ws-01","plc:plc-1"],
+  "signals": [
+    {"id":"sig-001","ts":"2026-03-04T03:40:00Z","entity_ids":["host:ws-help-01","user:alice"],"kind":"role_deviation","score":0.6,"event_ids":["windows-aa7aa68146c4"],"techniques":["T1078"],"detail":{"note":"logon at an odd hour","held":true}},
+    {"id":"sig-002","ts":"2026-03-04T03:43:02.110000Z","entity_ids":["host:ws-help-01","user:alice"],"kind":"role_deviation","score":0.96,"event_ids":["windows-3d9b0caf56b1"],"techniques":["T1059.001"],"detail":{"token":"proc:powershell_enc"}},
+    {"id":"sig-003","ts":"2026-03-04T03:48:05.020000Z","entity_ids":["host:ws-help-01","user:alice"],"kind":"routine_break","score":0.71,"event_ids":["windows-df7e20e82366"],"techniques":["T1018"],"detail":{"token":"proc:nltest","held":true}},
+    {"id":"sig-004","ts":"2026-03-04T03:48:20Z","entity_ids":["host:ws-help-01","decoy:dc-decoy-01"],"kind":"decoy_hit","score":1.0,"event_ids":["flow-c7621933881f"],"techniques":["T1018"],"detail":{"decoy":"dc-decoy-01","allowlisted":false}},
+    {"id":"sig-005","ts":"2026-03-04T04:20:00Z","entity_ids":["host:file-01","user:alice"],"kind":"log_clear","score":1.0,"event_ids":["windows-46ff3d489abb"],"techniques":["T1070.001"],"detail":{}},
+    {"id":"sig-006","ts":"2026-03-04T04:50:00Z","entity_ids":["plc:plc-1","host:eng-ws-01"],"kind":"ot_invariant","score":1.0,"event_ids":["modbus-06e981d9288c"],"techniques":["T0836","T0855"],"detail":{"rule":"setpoint_range","limit":"40 to 60","value":95}}
+  ],
+  "chain": [
+    {"ts":"2026-03-04T03:40:00Z","tactic":"Initial Access","technique":"T1078","description":"Valid account logon on dc-01 from ws-help-01, odd hour","signal_id":"sig-001","matched_routine":true},
+    {"ts":"2026-03-04T03:43:02.110000Z","tactic":"Execution","technique":"T1059.001","description":"powershell.exe -enc ... on ws-help-01","signal_id":"sig-002","matched_routine":false},
+    {"ts":"2026-03-04T03:48:05.020000Z","tactic":"Discovery","technique":"T1018","description":"nltest /dclist:corp on ws-help-01","signal_id":"sig-003","matched_routine":false},
+    {"ts":"2026-03-04T03:48:20Z","tactic":"Discovery","technique":"T1018","description":"Connection to decoy dc-decoy-01 (10.0.2.99:445)","signal_id":"sig-004","matched_routine":false},
+    {"ts":"2026-03-04T04:20:00Z","tactic":"Defense Evasion","technique":"T1070.001","description":"Audit log cleared on file-01","signal_id":"sig-005","matched_routine":false},
+    {"ts":"2026-03-04T04:50:00Z","tactic":"Impair Process Control","technique":"T0836","description":"Out-of-range Modbus write 95 to plc-1 reg 40001 (limit 40 to 60)","signal_id":"sig-006","matched_routine":false}
+  ],
+  "promoted_held_signal_ids": ["sig-001", "sig-003"],
+  "chain_stop": {"index": 1, "reason": "powershell -enc is not part of any known admin routine"},
+  "proposed_actions": [
+    {"id":"act-001","kind":"isolate_host","target":"plc-1","params":{}},
+    {"id":"act-002","kind":"block_write","target":"eng-ws-01","params":{"to":"plc-1"}},
+    {"id":"act-003","kind":"disable_account","target":"alice","params":{}}
+  ]
+}

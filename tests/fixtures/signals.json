@@ -1,0 +1,8 @@
+[
+  {"id":"sig-001","ts":"2026-03-04T03:40:00Z","entity_ids":["host:ws-help-01","user:alice"],"kind":"role_deviation","score":0.6,"event_ids":["windows-aa7aa68146c4"],"techniques":["T1078"],"detail":{"note":"logon at an odd hour","held":true}},
+  {"id":"sig-002","ts":"2026-03-04T03:43:02.110000Z","entity_ids":["host:ws-help-01","user:alice"],"kind":"role_deviation","score":0.96,"event_ids":["windows-3d9b0caf56b1"],"techniques":["T1059.001"],"detail":{"token":"proc:powershell_enc"}},
+  {"id":"sig-003","ts":"2026-03-04T03:48:05.020000Z","entity_ids":["host:ws-help-01","user:alice"],"kind":"routine_break","score":0.71,"event_ids":["windows-df7e20e82366"],"techniques":["T1018"],"detail":{"token":"proc:nltest","held":true}},
+  {"id":"sig-004","ts":"2026-03-04T03:48:20Z","entity_ids":["host:ws-help-01","decoy:dc-decoy-01"],"kind":"decoy_hit","score":1.0,"event_ids":["flow-c7621933881f"],"techniques":["T1018"],"detail":{"decoy":"dc-decoy-01","allowlisted":false}},
+  {"id":"sig-005","ts":"2026-03-04T04:20:00Z","entity_ids":["host:file-01","user:alice"],"kind":"log_clear","score":1.0,"event_ids":["windows-46ff3d489abb"],"techniques":["T1070.001"],"detail":{}},
+  {"id":"sig-006","ts":"2026-03-04T04:50:00Z","entity_ids":["plc:plc-1","host:eng-ws-01"],"kind":"ot_invariant","score":1.0,"event_ids":["modbus-06e981d9288c"],"techniques":["T0836","T0855"],"detail":{"rule":"setpoint_range","limit":"40 to 60","value":95}}
+]

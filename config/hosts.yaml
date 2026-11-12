@@ -1,0 +1,27 @@
+# Hosts, IP addresses and what each one is. Used by the adapters, the role scripts,
+# the graph and Trail Ahead. Entity ids: host:<name>, plc:<name> (kind plc),
+# decoy:<name> (listed under decoys).
+hosts:
+  ws-admin-01: {ip: 10.0.1.10, kind: admin-workstation,       zone: it}
+  ws-help-01:  {ip: 10.0.1.21, kind: helpdesk-workstation,    zone: it}
+  dc-01:       {ip: 10.0.2.5,  kind: domain-controller,       zone: it}
+  file-01:     {ip: 10.0.2.10, kind: file-server,             zone: it}
+  proxy-01:    {ip: 10.0.2.20, kind: proxy,                   zone: it}
+  bak-01:      {ip: 10.0.2.30, kind: backup-server,           zone: it}
+  eng-ws-01:   {ip: 10.0.3.5,  kind: engineering-workstation, zone: ot-dmz}
+  ops-ws-01:   {ip: 10.0.3.8,  kind: operator-workstation,    zone: ot-dmz}
+  hist-01:     {ip: 10.0.3.20, kind: historian,               zone: ot-dmz}
+  plc-1:       {ip: 10.0.4.11, kind: plc,                     zone: ot}
+  plc-2:       {ip: 10.0.4.12, kind: plc,                     zone: ot}
+  opc-1:       {ip: 10.0.4.13, kind: opcua-server,            zone: ot}
+
+# Virtual decoys. Nothing is added to real devices. Reserved address ranges:
+# 10.0.2.90-10.0.2.99 and 10.0.4.90-10.0.4.99.
+decoys:
+  dc-decoy-01: {ip: 10.0.2.99, kind: file-server, zone: it}
+  plc-decoy-1: {ip: 10.0.4.99, kind: plc,         zone: ot}
+
+# Outside the network. Names are neutral on purpose.
+external:
+  update-server: {ip: 10.0.9.5}
+  ext-host-77:   {ip: 10.0.9.77}
