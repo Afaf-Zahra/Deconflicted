@@ -1,0 +1,295 @@
+{
+  "action": {
+    "id": "act-001",
+    "kind": "isolate_host",
+    "target": "plc-1",
+    "params": {}
+  },
+  "before_trace": [
+    {
+      "t": 0.0,
+      "level": 50.0
+    },
+    {
+      "t": 10.0,
+      "level": 49.6
+    },
+    {
+      "t": 20.0,
+      "level": 50.1
+    },
+    {
+      "t": 30.0,
+      "level": 49.7
+    },
+    {
+      "t": 40.0,
+      "level": 54.7
+    },
+    {
+      "t": 50.0,
+      "level": 59.7
+    },
+    {
+      "t": 60.0,
+      "level": 64.7
+    },
+    {
+      "t": 70.0,
+      "level": 69.7
+    },
+    {
+      "t": 80.0,
+      "level": 74.7
+    },
+    {
+      "t": 90.0,
+      "level": 79.7
+    },
+    {
+      "t": 100.0,
+      "level": 84.7
+    },
+    {
+      "t": 110.0,
+      "level": 89.7
+    },
+    {
+      "t": 120.0,
+      "level": 94.7
+    },
+    {
+      "t": 130.0,
+      "level": 95.2
+    },
+    {
+      "t": 140.0,
+      "level": 94.8
+    },
+    {
+      "t": 150.0,
+      "level": 95.3
+    },
+    {
+      "t": 160.0,
+      "level": 94.9
+    },
+    {
+      "t": 170.0,
+      "level": 95.4
+    },
+    {
+      "t": 180.0,
+      "level": 95.0
+    },
+    {
+      "t": 190.0,
+      "level": 95.5
+    },
+    {
+      "t": 200.0,
+      "level": 94.2
+    },
+    {
+      "t": 210.0,
+      "level": 95.6
+    },
+    {
+      "t": 220.0,
+      "level": 94.3
+    },
+    {
+      "t": 230.0,
+      "level": 95.7
+    },
+    {
+      "t": 240.0,
+      "level": 94.4
+    },
+    {
+      "t": 250.0,
+      "level": 95.8
+    },
+    {
+      "t": 260.0,
+      "level": 94.5
+    },
+    {
+      "t": 270.0,
+      "level": 95.9
+    },
+    {
+      "t": 280.0,
+      "level": 93.7
+    },
+    {
+      "t": 290.0,
+      "level": 96.0
+    },
+    {
+      "t": 300.0,
+      "level": 93.8
+    }
+  ],
+  "after_trace": [
+    {
+      "t": 0.0,
+      "level": 50.0
+    },
+    {
+      "t": 10.0,
+      "level": 46.0
+    },
+    {
+      "t": 20.0,
+      "level": 42.0
+    },
+    {
+      "t": 30.0,
+      "level": 38.0
+    },
+    {
+      "t": 40.0,
+      "level": 34.0
+    },
+    {
+      "t": 50.0,
+      "level": 30.0
+    },
+    {
+      "t": 60.0,
+      "level": 26.0
+    },
+    {
+      "t": 70.0,
+      "level": 22.0
+    },
+    {
+      "t": 80.0,
+      "level": 18.0
+    },
+    {
+      "t": 90.0,
+      "level": 14.0
+    },
+    {
+      "t": 100.0,
+      "level": 10.0
+    },
+    {
+      "t": 110.0,
+      "level": 6.0
+    },
+    {
+      "t": 120.0,
+      "level": 2.0
+    },
+    {
+      "t": 130.0,
+      "level": 0.0
+    },
+    {
+      "t": 140.0,
+      "level": 0.0
+    },
+    {
+      "t": 150.0,
+      "level": 0.0
+    },
+    {
+      "t": 160.0,
+      "level": 0.0
+    },
+    {
+      "t": 170.0,
+      "level": 0.0
+    },
+    {
+      "t": 180.0,
+      "level": 0.0
+    },
+    {
+      "t": 190.0,
+      "level": 0.0
+    },
+    {
+      "t": 200.0,
+      "level": 0.0
+    },
+    {
+      "t": 210.0,
+      "level": 0.0
+    },
+    {
+      "t": 220.0,
+      "level": 0.0
+    },
+    {
+      "t": 230.0,
+      "level": 0.0
+    },
+    {
+      "t": 240.0,
+      "level": 0.0
+    },
+    {
+      "t": 250.0,
+      "level": 0.0
+    },
+    {
+      "t": 260.0,
+      "level": 0.0
+    },
+    {
+      "t": 270.0,
+      "level": 0.0
+    },
+    {
+      "t": 280.0,
+      "level": 0.0
+    },
+    {
+      "t": 290.0,
+      "level": 0.0
+    },
+    {
+      "t": 300.0,
+      "level": 0.0
+    }
+  ],
+  "violations": [
+    {
+      "rule_id": "level_low",
+      "detail": "level reaches 19.6 at 76 s (allowed 20.0 to -)",
+      "ts": 76.0
+    }
+  ],
+  "safer_options": [
+    {
+      "id": "act-001-opt1",
+      "kind": "block_write",
+      "target": "eng-ws-01",
+      "params": {
+        "to": "plc-1"
+      }
+    },
+    {
+      "id": "act-001-opt3",
+      "kind": "rate_limit_writes",
+      "target": "plc-1",
+      "params": {
+        "max_per_minute": 6
+      }
+    },
+    {
+      "id": "act-001-opt2",
+      "kind": "reset_setpoint",
+      "target": "plc-1",
+      "params": {
+        "value": 50.0
+      }
+    }
+  ],
+  "decision": "downgrade",
+  "reason": "isolate_host on plc-1 would break level_low (level reaches 19.6 at 76 s (allowed 20.0 to -)); safer option: block_write on eng-ws-01, rate_limit_writes on plc-1, reset_setpoint on plc-1"
+}

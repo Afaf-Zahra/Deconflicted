@@ -1,0 +1,37 @@
+{
+  "decoys": [
+    {
+      "id": "dc-decoy-01",
+      "type": "fake_dc",
+      "address": "10.0.2.99"
+    },
+    {
+      "id": "plc-decoy-1",
+      "type": "fake_plc",
+      "address": "10.0.4.99"
+    }
+  ],
+  "hits": [
+    {
+      "ts": "2026-03-04T03:48:20Z",
+      "decoy": "dc-decoy-01",
+      "source": "ws-help-01"
+    }
+  ],
+  "placements": [
+    {
+      "host": "dc-01",
+      "decoy_type": "fake_dc",
+      "address": "10.0.2.90",
+      "reason": "likely next hop from ws-help-01, reachable, in the server zone",
+      "safety_ok": true
+    },
+    {
+      "host": "file-01",
+      "decoy_type": "fake_dc",
+      "address": "10.0.2.91",
+      "reason": "likely next hop from ws-help-01, reachable, in the server zone",
+      "safety_ok": true
+    }
+  ]
+}

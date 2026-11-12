@@ -1,0 +1,87 @@
+# Deconflicted: the API, three ledger nodes and the UI. Everything runs without the internet.
+# `internal` has no route to the outside. Only api and web also join `frontend`, so the host can reach them.
+x-python: &python
+  build:
+    context: .
+    dockerfile: docker/Dockerfile.api
+    args:
+      WITH_ML: ${WITH_ML:-1}
+  image: deconflicted-api:latest
+
+x-node-health: &node-health
+  test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:9100/health', timeout=2)"]
+  interval: 5s
+  timeout: 3s
+  retries: 10
+
+services:
+  ledger-a:
+    <<: *python
+    command: ["python", "-m", "deconflicted.ledger.node", "--id", "node-a", "--port", "9100", "--data", "/data"]
+    volumes: ["ledger-a-data:/data"]
+    networks: [internal]
+    healthcheck: *node-health
+  ledger-b:
+    <<: *python
+    command: ["python", "-m", "deconflicted.ledger.node", "--id", "node-b", "--port", "9100", "--data", "/data"]
+    volumes: ["ledger-b-data:/data"]
+    networks: [internal]
+    healthcheck: *node-health
+  ledger-c:
+    <<: *python
+    command: ["python", "-m", "deconflicted.ledger.node", "--id", "node-c", "--port", "9100", "--data", "/data"]
+    volumes: ["ledger-c-data:/data"]
+    networks: [internal]
+    healthcheck: *node-health
+
+  api:
+    <<: *python
+    environment:
+      DECONFLICTED_LEDGER_NODES: node-a=http://ledger-a:9100,node-b=http://ledger-b:9100,node-c=http://ledger-c:9100
+      DECONFLICTED_LEDGER_DB: /data/client.db
+    volumes: ["api-data:/data"]
+    ports: ["8000:8000"]
+    networks: [internal, frontend]
+    depends_on:
+      ledger-a: {condition: service_healthy}
+      ledger-b: {condition: service_healthy}
+      ledger-c: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/ledger/nodes', timeout=3)"]
+      interval: 5s
+      timeout: 4s
+      retries: 20
+
+  web:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.web
+    image: deconflicted-web:latest
+    ports: ["8080:8080"]
+    networks: [internal, frontend]
+    depends_on:
+      api: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/', timeout=2)"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  replay:
+    <<: *python
+    profiles: [demo]
+    command: ["python", "-m", "deconflicted.sim.replay", "--file", "data/demo/scenario.jsonl", "--speed", "60", "--url", "http://api:8000"]
+    networks: [internal]
+    depends_on:
+      api: {condition: service_healthy}
+
+networks:
+  internal:
+    internal: true
+  frontend: {}
+
+volumes:
+  ledger-a-data:
+  ledger-b-data:
+  ledger-c-data:
+  api-data:
