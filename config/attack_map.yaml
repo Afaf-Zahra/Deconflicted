@@ -1,10 +1,19 @@
-# Maps behaviour to an ATT&CK tactic and technique. The incident view reads this.
+# Maps behaviour tokens (docs/conventions.md) to an ATT&CK tactic and technique.
+# The incident view reads this. Signals that already carry a technique, such as a decoy hit
+# or a log clear, keep it. Tactic names are the exact ATT&CK names.
 map:
-  logon:odd_hour:          {tactic: Initial Access,       technique: T1078}
-  proc:powershell_enc:     {tactic: Execution,            technique: T1059.001}
-  proc:wmic_remote:        {tactic: Execution,            technique: T1047}
-  proc:nltest:             {tactic: Discovery,            technique: T1018}
-  decoy_hit:               {tactic: Discovery,            technique: T1018}
-  net:smb:                 {tactic: Lateral Movement,     technique: T1021.002}
-  log_clear:               {tactic: Defense Evasion,      technique: T1070.001}
-  ot_invariant:            {tactic: Impair Process Control, technique: T0836}
+  auth:logon:               {tactic: Initial Access,         technique: T1078}
+  proc:powershell_enc:      {tactic: Execution,              technique: T1059.001}
+  proc:powershell_script:   {tactic: Execution,              technique: T1059.001}
+  proc:wmic:                {tactic: Execution,              technique: T1047}
+  proc:nltest:              {tactic: Discovery,              technique: T1018}
+  proc:net_view:            {tactic: Discovery,              technique: T1135}
+  proc:net_user:            {tactic: Discovery,              technique: T1087}
+  proc:certutil_download:   {tactic: Command and Control,    technique: T1105}
+  net:decoy_touch:          {tactic: Discovery,              technique: T1018}
+  net:smb:                  {tactic: Lateral Movement,       technique: T1021.002}
+  net:smb_admin:            {tactic: Lateral Movement,       technique: T1021.002}
+  log:cleared:              {tactic: Defense Evasion,        technique: T1070.001}
+  ot:write_setpoint:        {tactic: Impair Process Control, technique: T0836}
+  ot:write_pump:            {tactic: Impair Process Control, technique: T0855}
+  ot:write_other:           {tactic: Impair Process Control, technique: T0855}

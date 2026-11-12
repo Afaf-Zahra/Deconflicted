@@ -1,11 +1,14 @@
 # Ledger policy. Changes to this file and to the safety files need the signatures listed below.
+# The keys under signatures_required are the ledger entry kinds in schema.py (LedgerKind).
 nodes: [node-a, node-b, node-c]
 quorum: 2                    # 2 of 3 nodes must sign
 signatures_required:
-  detection_record: 1
-  guard_decision: 2
-  analyst_approval: 2        # analyst plus a node quorum
+  detection: 1
+  response_decision: 2
+  approval: 2                # analyst plus a node quorum
   policy_change: 2           # one compromised admin cannot loosen the safety rules
+  ingest_anchor: 1
+  config_anchor: 2
 analysts: [analyst-1, analyst-2]
 anchor_interval_events: 500  # starter value, ingest Merkle root every N events
 # Files whose hashes are recorded in the ledger. A change that was not signed raises integrity_violation.

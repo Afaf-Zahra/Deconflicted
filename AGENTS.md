@@ -25,7 +25,9 @@ Deconflicted is an offline IT/OT threat hunter. It finds living-off-the-land int
 - `web/` is the UI. `docs/` is documentation. `tests/` holds Python tests.
 
 ## Ownership (one owner per file)
-Branch prefix shows whose work it is: `atif/`, `ayaz/`, `afaf/`, `maimoona/`. Only edit files in your own list. Before you open a pull request, run `git diff --name-only main` and check that every path is yours. If you need a change in a file you do not own, ask its owner.
+Branch prefix shows whose work it is: `atif/`, `ayaz/`, `afaf/`, `maimoona/`. Only edit files in your own list. Before you push, run `git diff --name-only main` and check that every path is yours. If you need a change in a file you do not own, ask its owner.
+
+Push routine: commit small and often, then run `git pull --rebase` and `git push`. If a push is rejected, run `git pull --rebase` again and retry.
 
 - **Atif:**
   - Python: `schema.py`, `fakes.py`, `core/`, `eval/`, `ingest/` (mapper and sniffer), `sim/attack/`, `sim/build.py`, `sim/__init__.py`, `api/main.py` and every `api/routes_*.py` not listed under Ayaz.
@@ -53,7 +55,7 @@ Branch prefix shows whose work it is: `atif/`, `ayaz/`, `afaf/`, `maimoona/`. On
 - **No secrets in the repo.** No private keys, tokens or passwords. Ledger keys are generated at start-up.
 - **Contracts are frozen.** Do not rename or remove a field in `schema.py`, a file name, or a mock shape. If it does not fit, tell Atif.
 - **Mock first for the UI.** Build against `web/mock/` and switch to the API with `VITE_API=live`. If a field is missing show a placeholder, never crash, never invent a field.
-- **Keep scope tight.** One task per pull request, only the files it needs, no unrelated reformatting.
+- **Keep scope tight.** One task per commit, only the files it needs, no unrelated reformatting.
 - **Docs:** easy words, short sentences, no emojis, no em dashes. Do not claim anything the demo does not show. Leave unknown numbers as TODO.
 - **Commit messages:** short, past tense, one task per commit (for example `Added the Windows adapter`).
 

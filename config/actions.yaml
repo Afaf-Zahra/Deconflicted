@@ -1,18 +1,24 @@
 # Response actions the guard knows. An action that is not listed here is blocked.
-# Kinds must match ActionKind in schema.py.
+# Kinds must match ActionKind in schema.py. All six are listed.
+# target says what the action can be aimed at:
+#   host  any entry in hosts.yaml, including PLCs
+#   plc   only an entry whose kind is plc
+#   user  a user name from roles.yaml
 # process_effect is what the tank model does when the action runs:
-#   none         no change to the process
-#   plc_offline  the PLC stops receiving writes and keeps its last state
+#   none          no change to the process
+#   plc_offline   the PLC stops updating; pump and valve hold their last values
+#   block_writes  writes from the blocked source never reach the PLC; the PLC keeps running
+#   set_setpoint  the setpoint becomes the action's value
 actions:
   isolate_host:
-    target: host            # host, plc or user
+    target: host
     params: []
-    process_effect: plc_offline    # only applies when the target is a PLC
+    process_effect: plc_offline    # only has an effect when the target is a PLC
     downgrade_to: block_write
   block_write:
     target: host
     params: [to]
-    process_effect: none
+    process_effect: block_writes
   disable_account:
     target: user
     params: []
@@ -20,4 +26,12 @@ actions:
   kill_process:
     target: host
     params: [process]
+    process_effect: none
+  reset_setpoint:
+    target: plc
+    params: [value]
+    process_effect: set_setpoint
+  rate_limit_writes:
+    target: plc
+    params: [max_per_minute]
     process_effect: none
