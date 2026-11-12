@@ -1,0 +1,12 @@
+# Roles and the baseline model that learns what is normal for each one.
+# Users and hosts must exist in hosts.yaml and docs/conventions.md.
+model:
+  window_hours: 24        # history the baseline looks at
+  laplace_alpha: 1        # smoothing for behaviour never seen before
+  peer_backoff_n: 20      # weight = n / (n + 20); few samples means lean on the role's peers
+roles:
+  admin:      {users: [alice],      hosts: [ws-admin-01]}
+  helpdesk:   {users: [bob],        hosts: [ws-help-01]}
+  engineer:   {users: [carol],      hosts: [eng-ws-01]}
+  operator:   {users: [dave],       hosts: [ops-ws-01]}
+  service:    {users: [svc-backup], hosts: [bak-01]}

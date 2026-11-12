@@ -1,0 +1,24 @@
+# Decoy types, the deconfliction allowlist and the Trail Ahead placement rules.
+# The decoy hosts themselves (ids, IPs, reserved ranges) are in hosts.yaml. Do not repeat them here.
+types:
+  fake_dc:
+    service: smb
+    port: 445
+    looks_like: dc-01
+  fake_plc:
+    service: modbus
+    port: 502
+    looks_like: plc-1
+# Activity that may touch a decoy without raising an alert (admin tools, scanners).
+allowlist:
+  - host: ws-admin-01
+    ports: [445]
+    reason: alice's scheduled directory check
+trail_ahead:
+  # Likely next hops for an attacker who is on the given host. Used to suggest where to place decoys.
+  next_hops:
+    host:ws-help-01: [host:dc-01, host:file-01]
+    host:file-01: [host:eng-ws-01]
+  placement_rules:
+    - id: reserved_range_only      # decoys use only the reserved IP ranges in hosts.yaml
+    - id: no_traffic_to_real_plc   # a decoy must never send traffic to a real PLC

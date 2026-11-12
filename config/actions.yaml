@@ -1,0 +1,23 @@
+# Response actions the guard knows. An action that is not listed here is blocked.
+# Kinds must match ActionKind in schema.py.
+# process_effect is what the tank model does when the action runs:
+#   none         no change to the process
+#   plc_offline  the PLC stops receiving writes and keeps its last state
+actions:
+  isolate_host:
+    target: host            # host, plc or user
+    params: []
+    process_effect: plc_offline    # only applies when the target is a PLC
+    downgrade_to: block_write
+  block_write:
+    target: host
+    params: [to]
+    process_effect: none
+  disable_account:
+    target: user
+    params: []
+    process_effect: none
+  kill_process:
+    target: host
+    params: [process]
+    process_effect: none

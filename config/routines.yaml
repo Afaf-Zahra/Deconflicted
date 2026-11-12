@@ -1,0 +1,16 @@
+# Known admin routines. A chain of steps that matches a routine is normal.
+# The chain stops matching at the first step that is not part of any routine.
+# Tokens follow the names in docs/conventions.md.
+routines:
+  - id: helpdesk_password_reset
+    role: helpdesk
+    steps: [proc:powershell_reset]
+    max_gap_seconds: 120
+  - id: ad_health_check
+    role: admin
+    steps: [proc:nltest]
+    max_gap_seconds: 300
+  - id: nightly_backup
+    role: service
+    steps: [proc:backup]
+    window_utc: ["01:00", "01:30"]   # outside this window it is a deviation

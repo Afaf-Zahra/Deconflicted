@@ -1,0 +1,10 @@
+# Maps behaviour to an ATT&CK tactic and technique. The incident view reads this.
+map:
+  logon:odd_hour:          {tactic: Initial Access,       technique: T1078}
+  proc:powershell_enc:     {tactic: Execution,            technique: T1059.001}
+  proc:wmic_remote:        {tactic: Execution,            technique: T1047}
+  proc:nltest:             {tactic: Discovery,            technique: T1018}
+  decoy_hit:               {tactic: Discovery,            technique: T1018}
+  net:smb:                 {tactic: Lateral Movement,     technique: T1021.002}
+  log_clear:               {tactic: Defense Evasion,      technique: T1070.001}
+  ot_invariant:            {tactic: Impair Process Control, technique: T0836}

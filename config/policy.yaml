@@ -1,0 +1,18 @@
+# Ledger policy. Changes to this file and to the safety files need the signatures listed below.
+nodes: [node-a, node-b, node-c]
+quorum: 2                    # 2 of 3 nodes must sign
+signatures_required:
+  detection_record: 1
+  guard_decision: 2
+  analyst_approval: 2        # analyst plus a node quorum
+  policy_change: 2           # one compromised admin cannot loosen the safety rules
+analysts: [analyst-1, analyst-2]
+anchor_interval_events: 500  # starter value, ingest Merkle root every N events
+# Files whose hashes are recorded in the ledger. A change that was not signed raises integrity_violation.
+protected_files:
+  - config/actions.yaml
+  - config/safety_rules.yaml
+  - config/policy.yaml
+  - config/decoys.yaml
+  - config/invariants.yaml
+  - config/routines.yaml

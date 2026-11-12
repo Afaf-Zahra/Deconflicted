@@ -1,0 +1,22 @@
+# Process-safety rules. The guard simulates every action over the horizon and checks every rule.
+# Any error, missing rule or unknown rule type means block, never allow.
+horizon_seconds: 300
+rules:
+  - id: level_low
+    register: 40002          # tank level
+    min: 20                  # starter value, tune with the tank model
+  - id: level_high
+    register: 40002
+    max: 80                  # starter value, tune with the tank model
+  - id: setpoint_range
+    register: 40001          # setpoint
+    min: 40
+    max: 60
+# Used when no process model is available (rules-only mode).
+# These check the action itself, with no simulation.
+rules_only:
+  - id: no_plc_isolation
+    action: isolate_host
+    target_kind: plc
+    decision: block
+    reason: isolating a PLC leaves the pump and valve uncontrolled

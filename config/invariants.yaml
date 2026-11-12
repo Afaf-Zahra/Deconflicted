@@ -1,0 +1,12 @@
+# Rules about the process that must always hold. A break is a certain signal (ot_invariant).
+# The same numbers are used in safety_rules.yaml for the response guard.
+invariants:
+  - id: setpoint_range
+    register: 40001          # setpoint
+    min: 40
+    max: 60
+    techniques: [T0836, T0855]
+  - id: writer_allowlist
+    register: 40001
+    allowed_sources: [host:eng-ws-01]
+    note: only the engineering workstation may write the setpoint
