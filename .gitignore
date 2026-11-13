@@ -35,3 +35,6 @@ deconflicted-images.tar
 
 # throwaway scripts
 check_incidents.py
+
+# files the follow tool watches during a live demo
+data/live/s

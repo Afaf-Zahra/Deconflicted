@@ -2,9 +2,10 @@ import { useState } from "react"
 import { Header, type Tab } from "./components/layout/Header"
 import { Footer } from "./components/layout/Footer"
 import { AnalystPage } from "./pages/analyst"
+import { DemoPage } from "./pages/demo"
 import { DecoysPage, GraphPage, LedgerPage, ResponsePage } from "./pages/trust"
 
-/** The shell: five tabs and the selected incident, which every page receives. */
+/** The shell: five tabs (and Demo when VITE_DEBUG=1) and the selected incident, which every page receives. */
 function App({ onHome }: { onHome?: () => void }) {
   const [tab, setTab] = useState<Tab>("incidents")
   const [selectedIncidentId, setSelectedIncidentId] = useState<string | null>(null)
@@ -25,6 +26,7 @@ function App({ onHome }: { onHome?: () => void }) {
         {tab === "response" && <ResponsePage incidentId={selectedIncidentId} />}
         {tab === "ledger" && <LedgerPage incidentId={selectedIncidentId} />}
         {tab === "decoys" && <DecoysPage incidentId={selectedIncidentId} />}
+        {tab === "demo" && <DemoPage onSelectIncident={setSelectedIncidentId} onGoTo={setTab} />}
       </main>
       <Footer />
     </div>

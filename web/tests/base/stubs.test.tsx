@@ -31,10 +31,18 @@ describe("page stubs keep the agreed interface", () => {
     const decoys = render(<trust.DecoysPage incidentId="INC-0042" />)
     expect(screen.getByText("Decoys")).toBeInTheDocument()
     decoys.unmount()
+  })
 
-    const graphWithoutIncident = render(<trust.GraphPage incidentId={null} />)
-    expect(graphWithoutIncident.container).toBeEmptyDOMElement()
-    graphWithoutIncident.unmount()
+  it("the graph and response pages ask for an incident when none is selected", () => {
+    const graph = render(<trust.GraphPage incidentId={null} />)
+    expect(screen.getByText("Incident Graph")).toBeInTheDocument()
+    expect(screen.getByText(/Select an incident on the Incidents tab first/)).toBeInTheDocument()
+    graph.unmount()
+
+    const response = render(<trust.ResponsePage incidentId={null} />)
+    expect(screen.getByText("Response Preview")).toBeInTheDocument()
+    expect(screen.getByText(/Select an incident on the Incidents tab first/)).toBeInTheDocument()
+    response.unmount()
   })
 
   it("trust exports nothing else that a page would have to remove", () => {
@@ -42,4 +50,3 @@ describe("page stubs keep the agreed interface", () => {
     expect(Object.keys(analyst)).toEqual(["AnalystPage"])
   })
 })
-

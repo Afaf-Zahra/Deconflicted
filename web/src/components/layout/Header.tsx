@@ -1,4 +1,6 @@
-export type Tab = "incidents" | "graph" | "response" | "ledger" | "decoys"
+import { DEBUG_UI } from "../../lib/env"
+
+export type Tab = "incidents" | "graph" | "response" | "ledger" | "decoys" | "demo"
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "incidents", label: "Incidents" },
@@ -6,9 +8,10 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "response", label: "Response" },
   { id: "ledger", label: "Ledger" },
   { id: "decoys", label: "Decoys" },
+  ...(DEBUG_UI ? [{ id: "demo" as const, label: "Demo" }] : []),
 ]
 
-/** Top bar: the product name, the five tabs, and the incident that is currently selected. */
+/** Top bar: the product name, the five tabs (and Demo when VITE_DEBUG=1), and the incident that is currently selected. */
 export function Header({
   tab,
   onTabChange,

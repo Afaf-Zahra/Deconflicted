@@ -67,6 +67,7 @@ export function TopologyGraph({ incidentId }: GraphPageProps) {
   const { data, loading, error } = useGraph(incidentId)
   const { data: incident } = useIncident(incidentId)
   const graphRef = useRef<any>(null)
+  const nodeCache = useRef(new Map<string, GraphPoint>())
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null)
 
   const graphData = useMemo(() => {
@@ -75,7 +76,12 @@ export function TopologyGraph({ incidentId }: GraphPageProps) {
     }
 
     return {
-      nodes: data.nodes.map((node) => ({ ...node })),
+      nodes: data.nodes.map((node) => {
+        const known = nodeCache.current.get(node.id)
+        const point: GraphPoint = known ? Object.assign(known, node) : { ...node }
+        nodeCache.current.set(node.id, point)
+        return point
+      }),
       links: data.edges.map((edge) => ({
         source: edge.source,
         target: edge.target,

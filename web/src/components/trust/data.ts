@@ -58,35 +58,51 @@ async function postLive<T>(path: string, body: unknown): Promise<T> {
   return response.json() as Promise<T>
 }
 
-function useData<T>(loader: () => Promise<T>, dependencies: unknown[] = []): DataState<T> {
+/** Load data, and in live mode load it again every refreshMs so the page follows the system as it changes. */
+function useData<T>(loader: () => Promise<T>, dependencies: unknown[] = [], refreshMs = 0): DataState<T> {
   const [data, setData] = useState<T | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     let active = true
+    let first = true
+    let busy = false
 
-    setLoading(true)
-    setError(null)
+    async function load() {
+      if (busy) return
+      busy = true
+      if (first) {
+        setLoading(true)
+        setError(null)
+      }
+      try {
+        const result = await loader()
+        if (!active) return
+        setData((previous) => (JSON.stringify(previous) === JSON.stringify(result) ? previous : result))
+        setError(null)
+      } catch (err) {
+        if (active && first) setError(err instanceof Error ? err.message : "Failed to load data")
+      } finally {
+        if (active && first) setLoading(false)
+        first = false
+        busy = false
+      }
+    }
 
-    loader()
-      .then((result) => {
-        if (active) setData(result)
-      })
-      .catch((err: unknown) => {
-        if (active) setError(err instanceof Error ? err.message : "Failed to load data")
-      })
-      .finally(() => {
-        if (active) setLoading(false)
-      })
+    void load()
+    const timer = refreshMs > 0 ? window.setInterval(() => void load(), refreshMs) : undefined
 
     return () => {
       active = false
+      if (timer !== undefined) window.clearInterval(timer)
     }
   }, dependencies)
 
   return { data, loading, error }
 }
+
+const LIVE_REFRESH_MS = API_MODE === "live" ? 2000 : 0
 
 export function useGraph(incidentId: string): DataState<GraphData> {
   return useData(async () => {
@@ -97,7 +113,7 @@ export function useGraph(incidentId: string): DataState<GraphData> {
       return graph
     }
     return getLive<GraphData>(`/incidents/${incidentId}/graph`)
-  }, [incidentId])
+  }, [incidentId], LIVE_REFRESH_MS)
 }
 
 export function useIncident(incidentId: string): DataState<Incident> {
@@ -109,7 +125,7 @@ export function useIncident(incidentId: string): DataState<Incident> {
       return incident
     }
     return getLive<Incident>(`/incidents/${incidentId}`)
-  }, [incidentId])
+  }, [incidentId], LIVE_REFRESH_MS)
 }
 
 /** Ask the safety guard about one action. The API wants the incident id and the whole action. */
