@@ -84,3 +84,19 @@ python -m deconflicted.ingest.follow C:\logs --url http://localhost:8000
 Start the API with `DECONFLICTED_DEMO=1` and the web with `VITE_DEBUG=1`. A Demo tab appears. It can replay the recorded
 attack (`data/demo/scenario.jsonl`) at a speed you choose, reset the system, send the attack one step at a time, or send
 an event you paste. Reset clears incidents, events and decoy hits. The ledger keeps its history.
+
+## File and cloud decoys
+
+A decoy file is a file nobody has a reason to open. `config/decoy_files.yaml` lists them by exact path or by pattern.
+Any read or write of one is a certain signal, whatever tool was used (vim, nano, cat, less, cp, a script, a cloud
+download). The path decides, not the command. Other files are never judged.
+
+- Linux: watch the decoy path with auditd (`auditctl -w /srv/finance/passwords_2026.xlsx -p rwa -k decoy`) and send each
+  access to `/ingest/json` as `{"ts", "host", "user", "process", "op", "path"}`. `config/mappings/file_access.yaml` reads it.
+  The small shipper that turns audit lines into that JSON is not part of this repository.
+- Cloud: post a CloudTrail file, `{"Records": [...]}`, to `/ingest/json`. `config/mappings/cloudtrail.yaml` reads it. It matches
+  on the object key only, not the bucket, so give the decoy object a distinctive key.
+- A person or job that must touch a decoy goes in the `allowlist` with a reason, and can be limited by program, hours and a
+  last day. `decoy_files.yaml` is a protected file, so editing the allowlist without a signed change raises an incident.
+
+Limits: a copy of the decoy file is not a decoy. Only the first touch is seen.

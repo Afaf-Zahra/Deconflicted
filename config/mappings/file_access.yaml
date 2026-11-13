@@ -1,0 +1,17 @@
+# File access seen on a Linux file server (auditd, inotify or a small shipper), one JSON object per access:
+#   {"ts": "2026-03-04T05:00:00Z", "host": "file-01", "user": "alice", "process": "vim", "op": "open", "path": "/srv/..."}
+# It becomes a read or a write on that path. Only a decoy file (config/decoy_files.yaml) raises a signal.
+name: file_access
+source: linux
+format: json
+detect: {has: [path, op, ts, host]}
+timestamp: {field: ts, format: iso}
+action:
+  field: op
+  map: {open: read, read: read, copy: read, write: write, modify: write, delete: write, rename: write}
+fields:
+  host: host
+  user: user
+  process: process
+  cmdline: cmdline
+  obj: path

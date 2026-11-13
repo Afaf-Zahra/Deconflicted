@@ -8,6 +8,7 @@ from __future__ import annotations
 from deconflicted.deception.registry import DecoyRegistry
 from deconflicted.schema import Event
 
+OT_SOURCES = ("modbus", "opcua")
 _registry: DecoyRegistry | None = None
 
 
@@ -56,6 +57,8 @@ def event_token(event: Event) -> str:
         return "net:flow"
     if action == "http_request":
         return "net:http"
+    if action in ("read", "write") and event.source not in OT_SOURCES:
+        return f"file:{action}"
     if action == "read":
         return "ot:read"
     obj = event.obj or ""

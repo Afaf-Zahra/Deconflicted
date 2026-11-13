@@ -1,0 +1,17 @@
+# Cloud object storage, as AWS CloudTrail writes it. POST the {"Records": [...]} file to /ingest/json.
+# "linux" is the closest built-in source; the event only carries a user, an address and an object key.
+# Only a decoy object (config/decoy_files.yaml) raises a signal. Other event names are listed as not mapped.
+name: cloudtrail
+source: linux
+format: json
+detect: {has: [eventName, eventSource]}
+timestamp: {field: eventTime, format: iso}
+action:
+  field: eventName
+  map: {GetObject: read, HeadObject: read, CopyObject: read, PutObject: write, DeleteObject: write}
+fields:
+  host: eventSource
+  user: userIdentity.userName
+  process: eventName
+  src_ip: sourceIPAddress
+  obj: requestParameters.key

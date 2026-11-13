@@ -1,0 +1,20 @@
+# Decoy files and cloud objects (deconflicted/core/filedecoys.py).
+# Nobody has a reason to open these. Any touch is a certain signal, whatever tool was used (vim, nano, cat, less, cp,
+# a script, a cloud download). The path decides, not the command. The collector must report reads, not only writes.
+files:
+  - id: finance-passwords
+    host: file-01                              # optional: only on this host
+    path: /srv/finance/passwords_2026.xlsx     # an exact path
+  - id: cloud-admin-keys
+    match: "*backups/admin-keys.csv"           # or a glob, for cloud object keys
+
+# The few people or jobs that may touch a decoy. Keep it short. Every entry needs a reason.
+# Quote the times: an unquoted 10:00 is read by YAML as the number 600.
+# allowlist:
+#   - user: backup-svc
+#     process: rssync                           # optional
+#     hours: ["01:00", "03:00"]                # optional, UTC
+#     until: 2026-12-31                        # optional, the last day the entry counts
+#     decoy: finance-passwords                 # optional
+#     reason: the nightly backup walks the finance share
+allowlist: []

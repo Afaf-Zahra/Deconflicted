@@ -17,5 +17,6 @@ protected_files:
   - config/safety_rules.yaml
   - config/policy.yaml
   - config/decoys.yaml
+  - config/decoy_files.yaml
   - config/invariants.yaml
   - config/routines.yaml

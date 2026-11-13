@@ -8,6 +8,8 @@ Every event is checked once and makes at most one signal:
             an incident when it shares a user, a workstation or a PLC with it, inside the time window, within
             settings.hops steps. The scorer never opens an incident by itself.
 Servers that everyone talks to (settings.ignore_host_kinds) and decoys never link two incidents.
+File and cloud-object access (tokens file:read and file:write) is not judged by the baseline: only a decoy file
+(config/decoy_files.yaml) raises a signal, a decoy_hit, whatever tool opened it.
 """
 from __future__ import annotations
 
@@ -20,12 +22,13 @@ from typing import Any, Callable
 
 from deconflicted.adapters.hosts import resolve_ip
 from deconflicted.deception import get_service
-from deconflicted.schema import (Action, Budget, ChainStep, ChainStop, Event, GraphEdge, GraphNode, Incident,
-                                 IncidentGraph, Signal)
+from deconflicted.schema import (Action, Budget, ChainStep, ChainStop, DecoyHit, Event, GraphEdge, GraphNode,
+                                 Incident, IncidentGraph, Signal)
 
 from .baseline import START, Baseline
 from .config import CoreConfig, load_config
 from .entities import OT_SOURCES, acting_host, entities_of, host_entity, token_of
+from .filedecoys import FileDecoys
 from .invariants import Invariants
 from .routines import RoutineCheck, RoutineRegistry
 from .settings import Settings, load_settings
@@ -62,7 +65,7 @@ class Pipeline:
                  settings: Settings | None = None, decoy_trigger: Callable[[Event], Signal | None] | None = None,
                  recorder: Callable[[str, dict], Any] | None = None, scorer: Any | None = None,
                  integrity_check: Callable[[], list[Signal]] | None = None, integrity_interval: float = 1.0,
-                 max_events: int = 100_000):
+                 max_events: int = 100_000, file_decoys: FileDecoys | None = None):
         self.lock = threading.RLock()
         self.config = config or load_config()
         self.settings = settings or load_settings()
@@ -70,6 +73,7 @@ class Pipeline:
         self.routines = RoutineRegistry(self.config)
         self.invariants = Invariants(self.config)
         self.decoy_trigger = decoy_trigger if decoy_trigger is not None else get_service().trigger
+        self.file_decoys = file_decoys if file_decoys is not None else FileDecoys(self.config)
         self.recorder = recorder
         self.scorer = scorer
         self.integrity_check = integrity_check
@@ -161,13 +165,17 @@ class Pipeline:
 
     def _detect(self, event: Event) -> list[tuple[Signal, dict]]:
         token = token_of(event)
+        if token.startswith("file:"):
+            return self._detect_file(event, token)
+        hit = self.decoy_trigger(event)
+        if token == "net:decoy_touch" and hit is None:
+            return []  # an allowlisted contact with a decoy (a scan, an admin tool) is not judged by the baseline either
         obs = self.baseline.observe(event, token)
         window = self._tokens[obs.actor]
         window.append(token)
         routine = self.routines.check(token, obs.actor, obs.role, acting_host(event), event.ts)
         meta = {"token": token, "routine": routine.status, "reason": routine.reason}
         certain: list[Signal] = []
-        hit = self.decoy_trigger(event)
         if hit is not None:
             certain.append(hit)
         if event.action == "log_clear":
@@ -188,6 +196,16 @@ class Pipeline:
             return [(self._baseline_signal(event, token, obs, routine, kind), meta)]
         signal = self._scorer_signal(event, token, obs.actor, list(window))
         return [(signal, meta)] if signal is not None else []
+
+    def _detect_file(self, event: Event, token: str) -> list[tuple[Signal, dict]]:
+        """Ordinary file access is not judged: nothing is known about what is normal for it. Only a decoy file raises."""
+        signal = self.file_decoys.signal(event)
+        if signal is None:
+            return []
+        hits = getattr(self.decoy_trigger, "hits", None)
+        if hits is not None:  # so that the Decoys page lists it like any other decoy hit
+            hits.append(DecoyHit(ts=event.ts, decoy=signal.detail["decoy"], source=acting_host(event)))
+        return [(signal, {"token": token, "routine": "none", "reason": ""})]
 
     def _technique(self, token: str) -> list[str]:
         technique = self.config.attack_map.get(token, ("", ""))[1]
@@ -448,6 +466,9 @@ class Pipeline:
         if event is None:
             return signal.kind.replace("_", " ")
         where = event.host
+        if signal.kind == "decoy_hit" and "path" in signal.detail:
+            verb = "changed" if event.action == "write" else "opened"
+            return f"{event.user or 'someone'} {verb} the decoy file {signal.detail['path']} on {where} with {signal.detail['how']}"
         if signal.kind == "decoy_hit":
             return f"Connection to decoy {signal.detail.get('decoy', event.dst_ip)} ({event.dst_ip}:{event.dst_port})"
         if signal.kind == "log_clear":
@@ -554,6 +575,12 @@ class Pipeline:
         origin = host_entity(acting_host(event), self.config)
         target = host_entity(event.host, self.config)
         user = f"user:{event.user.lower()}" if event.user else None
+        decoy_file = self.file_decoys.match(event) if token.startswith("file:") else None
+        if decoy_file is not None:
+            edges = [(origin, f"decoy:{decoy_file.id}", token)]
+            if user:
+                edges.insert(0, (user, origin, token))
+            return [edge for edge in edges if edge[0] != edge[1]]
         if event.action == "proc_create":
             edges = [(origin, f"proc:{event.process or 'unknown'}", token)]
         elif event.action == "logon":

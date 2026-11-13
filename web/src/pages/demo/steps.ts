@@ -33,6 +33,13 @@ export const ATTACK_STEPS: AttackStep[] = [
     body: () => ({ source: "flow", raw: `${stampSeconds()},10.0.1.21,10.0.2.99,445,tcp,812,9` }),
   },
   {
+    title: "Open the decoy file with vim",
+    say: "The tool does not matter. vim, nano, cat or cp on this path is the same certain signal. Nobody has a reason to open it.",
+    body: () => ({
+      ts: stamp(), host: "file-01", user: "alice", process: "vim", op: "open", path: "/srv/finance/passwords_2026.xlsx",
+    }),
+  },
+  {
     title: "Open the admin share on the file server",
     say: "Lateral movement with alice's account.",
     body: () => ({
@@ -55,7 +62,7 @@ export const ATTACK_STEPS: AttackStep[] = [
   },
   {
     title: "Write 95 to the PLC tank setpoint",
-    say: "Outside 40 to 60. The incident turns critical. Six alerts, one incident.",
+    say: "Outside 40 to 60. The incident turns critical. Seven alerts, one incident.",
     body: () => ({ ts: stamp(), server: "plc-1", client_ip: "10.0.3.5", func: 6, address: 40001, value: 95 }),
   },
 ]

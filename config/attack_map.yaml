@@ -17,3 +17,5 @@ map:
   ot:write_setpoint:        {tactic: Impair Process Control, technique: T0836}
   ot:write_pump:            {tactic: Impair Process Control, technique: T0855}
   ot:write_other:           {tactic: Impair Process Control, technique: T0855}
+  file:read:                {tactic: Collection,             technique: T1005}
+  file:write:               {tactic: Impact,                 technique: T1565.001}
