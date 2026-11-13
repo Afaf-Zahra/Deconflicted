@@ -45,11 +45,3 @@ export function stageSignal(stage: { stage: string; basis: string }): Signal {
   if (stage.stage === "Denial of Service / Impact") return "critical"
   return "warning"
 }
-
-/** Momentum (Phase 9, Feature 1) is a 0-100 rate-of-escalation score, not a
- * probability -- thresholds chosen independently of probabilitySignal's. */
-export function momentumSignal(score: number): Signal {
-  if (score >= 60) return "critical"
-  if (score >= 30) return "warning"
-  return "info"
-}

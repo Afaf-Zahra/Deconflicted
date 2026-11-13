@@ -1,4 +1,4 @@
-
+import { API_BASE } from "../../lib/env"
 import { useEffect, useState } from "react"
 import type {
   Incident,
@@ -52,8 +52,8 @@ async function loadAnalystData(): Promise<AnalystData> {
     return { incidents, events, budget }
   }
 
-  const incidents = await fetchJson<Incident[]>("/incidents")
-  const budget = await fetchJson<Budget>("/budget")
+  const incidents = await fetchJson<Incident[]>(`${API_BASE}/incidents`)
+  const budget = await fetchJson<Budget>(`${API_BASE}/budget`)
 
   const eventIds = [
     ...new Set(
@@ -66,7 +66,7 @@ async function loadAnalystData(): Promise<AnalystData> {
   const events =
     eventIds.length > 0
       ? await fetchJson<EvidenceEvent[]>(
-          `/events?ids=${encodeURIComponent(eventIds.join(","))}`,
+          `${API_BASE}/events?ids=${encodeURIComponent(eventIds.join(","))}`,
         )
       : []
 

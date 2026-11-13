@@ -1,11 +1,5 @@
 import { useMemo, useState } from "react"
-import {
-  AlertTriangle,
-  Check,
-  ChevronRight,
-  ShieldAlert,
-  X,
-} from "lucide-react"
+import { AlertTriangle, Check, ChevronRight, ShieldAlert, X } from "lucide-react"
 import {
   CartesianGrid,
   Line,
@@ -19,18 +13,19 @@ import {
 import { Badge } from "../primitives/Badge"
 import { DataReadout } from "../primitives/DataReadout"
 import { Panel } from "../primitives/Panel"
-import { previewResponse, useIncident } from "./data"
-import type {
-  IncidentAction,
-  ResponsePreview,
-  TracePoint,
-} from "./types"
+import { ANALYSTS, decide, previewResponse, useIncident } from "./data"
+import type { Decision, IncidentAction, ResponsePreview, TracePoint } from "./types"
 
 type ResponsePageProps = {
   incidentId: string
 }
 
 type ActionStatus = "idle" | "loading" | "error"
+type DecisionStatus = "idle" | "submitting" | "success" | "error"
+
+/** The tank level limits, level_low and level_high in config/safety_rules.yaml. */
+const LEVEL_LOW = 20
+const LEVEL_HIGH = 80
 
 function actionLabel(action: IncidentAction): string {
   switch (action.kind) {
@@ -45,26 +40,29 @@ function actionLabel(action: IncidentAction): string {
   }
 }
 
-function decisionSignal(
-  decision: ResponsePreview["decision"],
-): "info" | "warning" | "critical" {
+function decisionSignal(decision: ResponsePreview["decision"]): "info" | "warning" | "critical" {
   if (decision === "allow") return "info"
   if (decision === "downgrade") return "warning"
   return "critical"
 }
 
-function buildChartRows(
-  beforeTrace: TracePoint[],
-  afterTrace: TracePoint[],
-) {
+function buildChartRows(beforeTrace: TracePoint[], afterTrace: TracePoint[]) {
   const length = Math.max(beforeTrace.length, afterTrace.length)
 
   return Array.from({ length }, (_, index) => ({
-    t: beforeTrace[index]?.t ?? afterTrace[index]?.t ?? String(index),
+    t: beforeTrace[index]?.t ?? afterTrace[index]?.t ?? index,
     before: beforeTrace[index]?.level ?? null,
     after: afterTrace[index]?.level ?? null,
   }))
 }
+
+const AXIS_TICK = {
+  fill: "var(--color-on-surface-variant)",
+  fontFamily: "monospace",
+  fontSize: 10,
+}
+
+const AXIS_LINE = { stroke: "var(--color-outline-variant)" }
 
 export function ResponsePage({ incidentId }: ResponsePageProps) {
   const { data: incident, loading, error } = useIncident(incidentId)
@@ -74,24 +72,17 @@ export function ResponsePage({ incidentId }: ResponsePageProps) {
   const [status, setStatus] = useState<ActionStatus>("idle")
   const [previewError, setPreviewError] = useState<string | null>(null)
   const [analyst, setAnalyst] = useState("")
-  const [decisionStatus, setDecisionStatus] = useState<
-    "idle" | "submitting" | "success" | "error"
-  >("idle")
+  const [decisionStatus, setDecisionStatus] = useState<DecisionStatus>("idle")
   const [decisionError, setDecisionError] = useState<string | null>(null)
+  const [decisionMessage, setDecisionMessage] = useState("")
 
   const selectedAction = useMemo(() => {
     if (!incident || !selectedActionId) return null
-
-    return (
-      incident.proposed_actions.find(
-        (action) => action.id === selectedActionId,
-      ) ?? null
-    )
+    return incident.proposed_actions.find((action) => action.id === selectedActionId) ?? null
   }, [incident, selectedActionId])
 
   const chartRows = useMemo(() => {
     if (!preview) return []
-
     return buildChartRows(preview.before_trace, preview.after_trace)
   }, [preview])
 
@@ -104,51 +95,29 @@ export function ResponsePage({ incidentId }: ResponsePageProps) {
     setDecisionError(null)
 
     try {
-      const result = await previewResponse(action.id)
+      const result = await previewResponse(incidentId, action)
       setPreview(result)
       setStatus("idle")
     } catch (err) {
       setStatus("error")
-      setPreviewError(
-        err instanceof Error ? err.message : "Failed to load response preview",
-      )
+      setPreviewError(err instanceof Error ? err.message : "Failed to load response preview")
     }
   }
 
-  async function submitDecision(
-    decision: "approve" | "reject",
-  ) {
+  async function submitDecision(decision: Decision) {
     if (!selectedAction || !analyst || !preview) return
 
     setDecisionStatus("submitting")
     setDecisionError(null)
 
     try {
-      const endpoint =
-        decision === "approve"
-          ? `/response/${selectedAction.id}/approve`
-          : `/response/${selectedAction.id}/reject`
-
-      const response = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          analyst,
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error(`Response request failed: ${response.status}`)
-      }
-
+      const result = await decide(selectedAction.id, analyst, decision)
+      const verb = decision === "approve" ? "Approved" : "Rejected"
+      setDecisionMessage(`${verb}${result.seq === null ? "" : ` and signed into the ledger as entry ${result.seq}`}.`)
       setDecisionStatus("success")
     } catch (err) {
       setDecisionStatus("error")
-      setDecisionError(
-        err instanceof Error ? err.message : "Failed to submit response",
-      )
+      setDecisionError(err instanceof Error ? err.message : "Failed to submit response")
     }
   }
 
@@ -179,31 +148,25 @@ export function ResponsePage({ incidentId }: ResponsePageProps) {
     return (
       <Panel title="Response Preview" icon={<ShieldAlert size={14} />}>
         <div className="flex min-h-[420px] items-center justify-center px-4 py-8">
-          <DataReadout dim>
-            No proposed response actions available.
-          </DataReadout>
+          <DataReadout dim>No proposed response actions available.</DataReadout>
         </div>
       </Panel>
     )
   }
 
+  const firstSafer = preview?.decision === "downgrade" ? preview.safer_options[0] : undefined
+
   return (
     <Panel
       title="Response Preview"
       icon={<ShieldAlert size={14} />}
-      aside={
-        <DataReadout dim>
-          {incident.proposed_actions.length} proposed actions
-        </DataReadout>
-      }
+      aside={<DataReadout dim>{incident.proposed_actions.length} proposed actions</DataReadout>}
       bodyClassName="p-4"
     >
       <div className="grid gap-4 lg:grid-cols-[280px_minmax(0,1fr)]">
         <div className="space-y-3">
           <div>
-            <div className="mb-2 text-[10px] uppercase tracking-wide text-on-surface-variant">
-              Proposed actions
-            </div>
+            <div className="mb-2 text-[10px] uppercase tracking-wide text-on-surface-variant">Proposed actions</div>
 
             <div className="space-y-1.5">
               {incident.proposed_actions.map((action) => {
@@ -221,22 +184,13 @@ export function ResponsePage({ incidentId }: ResponsePageProps) {
                     }`}
                   >
                     <div className="min-w-0">
-                      <div className="font-mono text-[11px] font-semibold text-on-surface">
-                        {actionLabel(action)}
-                      </div>
-
-                      <div className="mt-1 font-mono text-[10px] text-on-surface-variant">
-                        {action.id}
-                      </div>
+                      <div className="font-mono text-[11px] font-semibold text-on-surface">{actionLabel(action)}</div>
+                      <div className="mt-1 font-mono text-[10px] text-on-surface-variant">{action.id}</div>
                     </div>
 
                     <ChevronRight
                       size={14}
-                      className={
-                        selected
-                          ? "shrink-0 text-primary"
-                          : "shrink-0 text-on-surface-variant"
-                      }
+                      className={selected ? "shrink-0 text-primary" : "shrink-0 text-on-surface-variant"}
                     />
                   </button>
                 )
@@ -246,13 +200,8 @@ export function ResponsePage({ incidentId }: ResponsePageProps) {
 
           {selectedAction && (
             <div className="border-t border-outline-variant pt-3">
-              <div className="mb-1 text-[10px] uppercase tracking-wide text-on-surface-variant">
-                Target
-              </div>
-
-              <DataReadout className="break-all text-xs">
-                {selectedAction.target}
-              </DataReadout>
+              <div className="mb-1 text-[10px] uppercase tracking-wide text-on-surface-variant">Target</div>
+              <DataReadout className="break-all text-xs">{selectedAction.target}</DataReadout>
             </div>
           )}
         </div>
@@ -260,30 +209,21 @@ export function ResponsePage({ incidentId }: ResponsePageProps) {
         <div className="min-w-0">
           {!selectedAction && (
             <div className="flex min-h-[360px] items-center justify-center border border-outline-variant">
-              <DataReadout dim>
-                Select an action to generate its response preview.
-              </DataReadout>
+              <DataReadout dim>Select an action to generate its response preview.</DataReadout>
             </div>
           )}
 
           {status === "loading" && (
             <div className="flex min-h-[360px] items-center justify-center border border-outline-variant">
-              <DataReadout dim>
-                Loading response preview...
-              </DataReadout>
+              <DataReadout dim>Loading response preview...</DataReadout>
             </div>
           )}
 
           {status === "error" && (
             <div className="flex min-h-[360px] items-center justify-center border border-outline-variant">
               <div className="text-center">
-                <AlertTriangle
-                  className="mx-auto mb-2 text-error"
-                  size={20}
-                />
-                <DataReadout className="text-error">
-                  {previewError}
-                </DataReadout>
+                <AlertTriangle className="mx-auto mb-2 text-error" size={20} />
+                <DataReadout className="text-error">{previewError}</DataReadout>
               </div>
             </div>
           )}
@@ -301,21 +241,15 @@ export function ResponsePage({ incidentId }: ResponsePageProps) {
               >
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                   <div>
-                    <div className="text-[10px] uppercase tracking-wide text-on-surface-variant">
-                      Decision
-                    </div>
+                    <div className="text-[10px] uppercase tracking-wide text-on-surface-variant">Decision</div>
 
                     <div className="mt-1">
-                      <Badge signal={decisionSignal(preview.decision)}>
-                        {preview.decision}
-                      </Badge>
+                      <Badge signal={decisionSignal(preview.decision)}>{preview.decision}</Badge>
                     </div>
                   </div>
 
                   <div className="sm:max-w-[70%]">
-                    <div className="text-[10px] uppercase tracking-wide text-on-surface-variant">
-                      Reason
-                    </div>
+                    <div className="text-[10px] uppercase tracking-wide text-on-surface-variant">Reason</div>
 
                     <div className="mt-1 font-mono text-[11px] leading-relaxed text-on-surface">
                       {preview.reason || "No reason provided."}
@@ -332,76 +266,33 @@ export function ResponsePage({ incidentId }: ResponsePageProps) {
                     </div>
                   ) : (
                     <ResponsiveContainer width="100%" height="100%">
-                      <LineChart
-                        data={chartRows}
-                        margin={{
-                          top: 8,
-                          right: 16,
-                          bottom: 8,
-                          left: 4,
-                        }}
-                      >
-                        <CartesianGrid
-                          stroke="var(--color-outline-variant)"
-                          strokeDasharray="1 6"
-                          vertical={false}
-                        />
+                      <LineChart data={chartRows} margin={{ top: 8, right: 16, bottom: 8, left: 4 }}>
+                        <CartesianGrid stroke="var(--color-outline-variant)" strokeDasharray="1 6" vertical={false} />
 
                         <XAxis
                           dataKey="t"
-                          tick={{
-                            fill: "var(--color-on-surface-variant)",
-                            fontFamily: "monospace",
-                            fontSize: 10,
-                          }}
-                          axisLine={{
-                            stroke: "var(--color-outline-variant)",
-                          }}
-                          tickLine={{
-                            stroke: "var(--color-outline-variant)",
-                          }}
+                          type="number"
+                          domain={["dataMin", "dataMax"]}
+                          unit=" s"
+                          tick={AXIS_TICK}
+                          axisLine={AXIS_LINE}
+                          tickLine={AXIS_LINE}
                         />
 
-                        <YAxis
-                          domain={[0, 1]}
-                          tick={{
-                            fill: "var(--color-on-surface-variant)",
-                            fontFamily: "monospace",
-                            fontSize: 10,
-                          }}
-                          axisLine={{
-                            stroke: "var(--color-outline-variant)",
-                          }}
-                          tickLine={{
-                            stroke: "var(--color-outline-variant)",
-                          }}
-                          width={36}
-                        />
+                        <YAxis domain={[0, 100]} tick={AXIS_TICK} axisLine={AXIS_LINE} tickLine={AXIS_LINE} width={36} />
 
                         <Tooltip
                           contentStyle={{
                             background: "var(--color-surface)",
-                            border:
-                              "1px solid var(--color-outline-variant)",
+                            border: "1px solid var(--color-outline-variant)",
                             fontFamily: "monospace",
                             fontSize: 11,
                           }}
-                          labelStyle={{
-                            color: "var(--color-on-surface-variant)",
-                          }}
+                          labelStyle={{ color: "var(--color-on-surface-variant)" }}
                         />
 
-                        <ReferenceLine
-                          y={0}
-                          stroke="var(--color-outline-variant)"
-                          strokeDasharray="2 4"
-                        />
-
-                        <ReferenceLine
-                          y={1}
-                          stroke="var(--color-outline-variant)"
-                          strokeDasharray="2 4"
-                        />
+                        <ReferenceLine y={LEVEL_LOW} stroke="var(--color-warning)" strokeDasharray="2 4" />
+                        <ReferenceLine y={LEVEL_HIGH} stroke="var(--color-warning)" strokeDasharray="2 4" />
 
                         <Line
                           type="monotone"
@@ -440,21 +331,14 @@ export function ResponsePage({ incidentId }: ResponsePageProps) {
                   ) : (
                     <div className="space-y-2 p-3">
                       {preview.violations.map((violation) => (
-                        <div
-                          key={`${violation.rule_id}-${violation.ts}`}
-                          className="border-l-2 border-error pl-2.5"
-                        >
-                          <div className="font-mono text-[10px] font-semibold text-error">
-                            {violation.rule_id}
-                          </div>
+                        <div key={`${violation.rule_id}-${violation.ts}`} className="border-l-2 border-error pl-2.5">
+                          <div className="font-mono text-[10px] font-semibold text-error">{violation.rule_id}</div>
 
                           <div className="mt-1 font-mono text-[10px] leading-relaxed text-on-surface-variant">
                             {violation.detail}
                           </div>
 
-                          <div className="mt-1 font-mono text-[9px] text-on-surface-variant">
-                            {violation.ts}
-                          </div>
+                          <div className="mt-1 font-mono text-[9px] text-on-surface-variant">{violation.ts} s</div>
                         </div>
                       ))}
                     </div>
@@ -464,30 +348,20 @@ export function ResponsePage({ incidentId }: ResponsePageProps) {
                 <Panel title="Safer Options">
                   {preview.safer_options.length === 0 ? (
                     <div className="p-3">
-                      <DataReadout dim>
-                        No safer options provided.
-                      </DataReadout>
+                      <DataReadout dim>No safer options provided.</DataReadout>
                     </div>
                   ) : (
                     <div className="space-y-2 p-3">
                       {preview.safer_options.map((option) => (
-                        <div
-                          key={option.id}
-                          className="border border-outline-variant bg-surface-container-low p-2.5"
-                        >
+                        <div key={option.id} className="border border-outline-variant bg-surface-container-low p-2.5">
                           <div className="flex items-start gap-2">
-                            <Check
-                              size={13}
-                              className="mt-0.5 shrink-0 text-secondary-fixed-dim"
-                            />
+                            <Check size={13} className="mt-0.5 shrink-0 text-secondary-fixed-dim" />
 
                             <div className="font-mono text-[10px] leading-relaxed text-on-surface">
                               <div>
                                 {option.kind} → {option.target}
                               </div>
-                              <div className="text-on-surface-variant">
-                                {JSON.stringify(option.params)}
-                              </div>
+                              <div className="text-on-surface-variant">{JSON.stringify(option.params)}</div>
                             </div>
                           </div>
                         </div>
@@ -500,9 +374,7 @@ export function ResponsePage({ incidentId }: ResponsePageProps) {
               <Panel title="Response Decision">
                 <div className="space-y-3 p-3">
                   <label className="flex flex-col gap-1">
-                    <span className="text-[10px] uppercase tracking-wide text-on-surface-variant">
-                      Analyst
-                    </span>
+                    <span className="text-[10px] uppercase tracking-wide text-on-surface-variant">Analyst</span>
 
                     <select
                       value={analyst}
@@ -514,9 +386,19 @@ export function ResponsePage({ incidentId }: ResponsePageProps) {
                       className="border border-outline-variant bg-surface-container-lowest px-2 py-1.5 font-mono text-[11px] text-primary focus:border-primary-container focus:outline-none"
                     >
                       <option value="">Select analyst</option>
-                      <option value="analyst">Analyst</option>
+                      {ANALYSTS.map((name) => (
+                        <option key={name} value={name}>
+                          {name}
+                        </option>
+                      ))}
                     </select>
                   </label>
+
+                  {firstSafer && (
+                    <div className="font-mono text-[10px] text-on-surface-variant">
+                      {`Approving applies the first safer option: ${firstSafer.kind} → ${firstSafer.target}`}
+                    </div>
+                  )}
 
                   {decisionStatus === "error" && (
                     <div className="flex items-center gap-2 font-mono text-[10px] text-error">
@@ -528,18 +410,14 @@ export function ResponsePage({ incidentId }: ResponsePageProps) {
                   {decisionStatus === "success" && (
                     <div className="flex items-center gap-2 font-mono text-[10px] text-secondary-fixed-dim">
                       <Check size={12} />
-                      Response decision submitted.
+                      {decisionMessage}
                     </div>
                   )}
 
                   <div className="flex flex-wrap gap-2">
                     <button
                       type="button"
-                      disabled={
-                        !analyst ||
-                        preview.decision === "block" ||
-                        decisionStatus === "submitting"
-                      }
+                      disabled={!analyst || preview.decision === "block" || decisionStatus === "submitting"}
                       onClick={() => void submitDecision("approve")}
                       className="flex items-center gap-1.5 bg-primary-container px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-wide text-surface-container-lowest transition-opacity hover:opacity-90 disabled:opacity-40"
                     >
@@ -549,9 +427,7 @@ export function ResponsePage({ incidentId }: ResponsePageProps) {
 
                     <button
                       type="button"
-                      disabled={
-                        !analyst || decisionStatus === "submitting"
-                      }
+                      disabled={!analyst || decisionStatus === "submitting"}
                       onClick={() => void submitDecision("reject")}
                       className="flex items-center gap-1.5 border border-outline-variant bg-surface-container-low px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-wide text-primary transition-colors hover:bg-surface-container disabled:opacity-40"
                     >

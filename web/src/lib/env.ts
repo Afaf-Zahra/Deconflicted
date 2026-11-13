@@ -7,3 +7,6 @@ export type ApiMode = "mock" | "live"
 
 export const API_MODE: ApiMode = import.meta.env.VITE_API === "live" ? "live" : "mock"
 export const API_BASE: string = import.meta.env.VITE_API_BASE ?? "/api"
+
+/** Shows the debug-only buttons (the ledger tamper test). The API must also run with DECONFLICTED_DEBUG=1. */
+export const DEBUG_UI: boolean = import.meta.env.VITE_DEBUG === "1"

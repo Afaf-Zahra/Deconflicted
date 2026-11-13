@@ -10,11 +10,28 @@ web/dist/
 *.sqlite
 .DS_Store
 Thumbs.db
+
+# organizer data stays local
 data/organizer/*
 !data/organizer/.gitkeep
+
+# evaluation output: only the report is committed
 data/eval/*
 !data/eval/.gitkeep
-data/audit_export.json
-data/benign/
-data/demo/scenario_full.jsonl
+!data/eval/report.json
 data/eval/work/
+
+# generated data (rebuild with python -m deconflicted.sim.build --out data)
+data/benign/
+data/heldout/
+data/demo/scenario_full.jsonl
+
+# ledger stores and exports
+data/ledger/
+data/audit_export.json
+
+# saved docker images
+deconflicted-images.tar
+
+# throwaway scripts
+check_incidents.py

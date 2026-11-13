@@ -6,7 +6,7 @@ import { useDecoys } from "./data"
 import type { DecoyPlacement } from "./types"
 
 type DecoysPageProps = {
-  incidentId: string
+  incidentId?: string | null
 }
 
 function placementSignal(
@@ -16,7 +16,7 @@ function placementSignal(
 }
 
 export function DecoysPage({ incidentId }: DecoysPageProps) {
-  const { data, loading, error } = useDecoys()
+  const { data, loading, error } = useDecoys(incidentId ?? undefined)
 
   if (loading) {
     return (
@@ -55,11 +55,7 @@ export function DecoysPage({ incidentId }: DecoysPageProps) {
     <Panel
       title="Decoys"
       icon={<ShieldCheck size={14} />}
-      aside={
-        <DataReadout dim>
-          incident {incidentId}
-        </DataReadout>
-      }
+      aside={incidentId ? <DataReadout dim>incident {incidentId}</DataReadout> : undefined}
       bodyClassName="p-4"
     >
       <div className="space-y-4">

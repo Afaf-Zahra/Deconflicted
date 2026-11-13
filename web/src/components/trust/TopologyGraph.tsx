@@ -10,8 +10,8 @@ import {
 import { Panel } from "../primitives/Panel"
 import { Badge } from "../primitives/Badge"
 import { DataReadout } from "../primitives/DataReadout"
-import { useGraph } from "./data"
-import type { GraphNode } from "./types"
+import { useGraph, useIncident } from "./data"
+import type { GraphNode, IncidentSignal } from "./types"
 import { SIGNAL_HEX, type Signal } from "../../lib/severity"
 
 type GraphPageProps = {
@@ -52,8 +52,20 @@ function cssVariable(name: string) {
     .trim()
 }
 
+/** The incident's signals that name this node (their entity ids include it). */
+function signalsFor(signals: IncidentSignal[] | undefined, nodeId: string): IncidentSignal[] {
+  return (signals ?? []).filter((signal) => signal.entity_ids.includes(nodeId))
+}
+
+function signalNote(signal: IncidentSignal): string {
+  const detail = signal.detail
+  const note = detail.note ?? detail.rule ?? detail.decoy
+  return typeof note === "string" ? note : ""
+}
+
 export function TopologyGraph({ incidentId }: GraphPageProps) {
   const { data, loading, error } = useGraph(incidentId)
+  const { data: incident } = useIncident(incidentId)
   const graphRef = useRef<any>(null)
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null)
 
@@ -305,13 +317,24 @@ export function TopologyGraph({ incidentId }: GraphPageProps) {
                     Signals
                   </div>
 
-                  <DataReadout className="text-xs">
-                    {selectedNode.decoy_hit
-                      ? "Decoy interaction detected"
-                      : selectedNode.anchor
-                        ? "Incident anchor"
-                        : "No additional signal"}
-                  </DataReadout>
+                  {signalsFor(incident?.signals, selectedNode.id).length === 0 ? (
+                    <DataReadout dim className="text-xs">
+                      No signal names this node
+                    </DataReadout>
+                  ) : (
+                    <ul className="max-h-40 space-y-1.5 overflow-y-auto">
+                      {signalsFor(incident?.signals, selectedNode.id).map((signal) => (
+                        <li key={signal.id} className="border-l-2 border-outline-variant pl-2">
+                          <div className="font-mono text-[10px] font-semibold text-on-surface">
+                            {`${signal.kind} · ${signal.score.toFixed(4)}`}
+                          </div>
+                          <div className="font-mono text-[9px] text-on-surface-variant">
+                            {`${signal.ts.slice(11, 19)} UTC ${signalNote(signal)}`.trim()}
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               </div>
             </Panel>

@@ -58,7 +58,7 @@ describe("branding and offline rules", () => {
     for (const name of ["Panel", "Badge", "DataReadout"]) {
       expect(existsSync(join(root, `src/components/primitives/${name}.tsx`)), name).toBe(true)
     }
-    for (const dep of ["recharts", "react-force-graph-2d", "d3-force-3d", "lucide-react", "axios"]) {
+    for (const dep of ["recharts", "react-force-graph-2d", "d3-force-3d", "lucide-react"]) {
       expect(JSON.parse(read("package.json")).dependencies[dep], dep).toBeTruthy()
     }
   })

@@ -75,10 +75,8 @@
 
   /* Not part of the generated M3 role set, but a real functional need this
      app has that the role system alone doesn't cover: a three-tier
-     info/warning/critical severity scale. The Stitch mockup itself reached
-     for this exact amber outside its own token set for the momentum gauge's
-     "escalating" band -- kept here as one disclosed, named exception rather
-     than a second one-off hex scattered through components. */
+     info/warning/critical severity scale. Kept here as one named exception
+     rather than a one-off hex scattered through components. */
   --color-warning: #f59e0b;
 
   /* Two typefaces, not three: Geist Sans carries UI chrome (headers, nav,
