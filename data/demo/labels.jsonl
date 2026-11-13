@@ -1,0 +1,6 @@
+{"id": "windows-aa7aa68146c4", "attack": true, "step": 1}
+{"id": "windows-3d9b0caf56b1", "attack": true, "step": 2}
+{"id": "windows-df7e20e82366", "attack": true, "step": 3}
+{"id": "flow-c7621933881f", "attack": true, "step": 3}
+{"id": "windows-46ff3d489abb", "attack": true, "step": 7}
+{"id": "modbus-06e981d9288c", "attack": true, "step": 9}

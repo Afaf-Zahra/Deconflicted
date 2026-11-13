@@ -1,0 +1,213 @@
+{
+  "data": {
+    "source": "simulated",
+    "train_days": 8,
+    "train_events": 134029,
+    "day_a_events": 16976,
+    "day_b_events": 16970,
+    "attack_scenarios": 11
+  },
+  "settings": {
+    "budget": 5,
+    "non_anchor_quota": 3,
+    "weak": 0.99
+  },
+  "calibration": {
+    "strong": 0.998,
+    "target_incidents_on_day_a": 3,
+    "met_target_on_day_a": true,
+    "rule": "the lowest strong threshold with at most 0.6 x budget incidents on benign day A",
+    "candidates_tried": [
+      {
+        "strong": 0.99,
+        "incidents_on_day_a": 8
+      },
+      {
+        "strong": 0.995,
+        "incidents_on_day_a": 4
+      },
+      {
+        "strong": 0.998,
+        "incidents_on_day_a": 3
+      }
+    ]
+  },
+  "metrics": {
+    "false_incidents_per_24h": {
+      "value": 3,
+      "target": "<= 5",
+      "pass": true,
+      "note": "incidents on the held-out benign day B, with the alert budget in force"
+    },
+    "calibration_check": {
+      "value": {
+        "day_a": 3,
+        "day_b": 3
+      },
+      "target": "day B <= 5",
+      "pass": true,
+      "note": "the threshold is set on day A and checked on day B"
+    },
+    "alert_reduction": {
+      "signals": 259,
+      "signals_over_threshold": 26,
+      "incidents": 3,
+      "note": "held-out day B: what a tool alerting on every strong signal would raise, against incidents"
+    },
+    "one_incident_per_attack": {
+      "value": 1.0,
+      "target": "1.0",
+      "pass": true,
+      "note": "11 attack scenarios"
+    },
+    "scenarios_missed": {
+      "value": 0,
+      "target": "0",
+      "pass": true
+    },
+    "chain_recall": {
+      "mean": 1.0,
+      "worst": 1.0,
+      "target": "TODO",
+      "pass": null
+    },
+    "time_to_first_alert_s": {
+      "mean": 0.0,
+      "worst": 0.0,
+      "target": "TODO",
+      "pass": null
+    },
+    "attack_mapping_accuracy": {
+      "mean": 1.0,
+      "worst": 1.0,
+      "target": "TODO",
+      "pass": null
+    },
+    "other_incidents_in_attack_scenarios": {
+      "mean": 0.090909,
+      "worst": 1
+    },
+    "zero_disruption_violations": {
+      "value": 0,
+      "target": "0",
+      "pass": true,
+      "note": "300 random states, 2700 actions"
+    },
+    "ledger_clean_verify": {
+      "value": true,
+      "target": "true",
+      "pass": true
+    },
+    "ledger_tamper_detection": {
+      "value": "5 of 5",
+      "target": "all",
+      "pass": true,
+      "note": "found, and at the right entry"
+    }
+  },
+  "scenarios": {
+    "main attack": {
+      "incidents_with_attack": 1,
+      "other_incidents": 0,
+      "one_incident": true,
+      "chain_recall": 1.0,
+      "time_to_first_alert_s": 0.0,
+      "mapping_accuracy": 1.0
+    },
+    "variant 1": {
+      "incidents_with_attack": 1,
+      "other_incidents": 0,
+      "one_incident": true,
+      "chain_recall": 1.0,
+      "time_to_first_alert_s": 0.0,
+      "mapping_accuracy": 1.0
+    },
+    "variant 2": {
+      "incidents_with_attack": 1,
+      "other_incidents": 0,
+      "one_incident": true,
+      "chain_recall": 1.0,
+      "time_to_first_alert_s": 0.0,
+      "mapping_accuracy": 1.0
+    },
+    "variant 3": {
+      "incidents_with_attack": 1,
+      "other_incidents": 0,
+      "one_incident": true,
+      "chain_recall": 1.0,
+      "time_to_first_alert_s": 0.0,
+      "mapping_accuracy": 1.0
+    },
+    "variant 4": {
+      "incidents_with_attack": 1,
+      "other_incidents": 0,
+      "one_incident": true,
+      "chain_recall": 1.0,
+      "time_to_first_alert_s": 0.0,
+      "mapping_accuracy": 1.0
+    },
+    "variant 5": {
+      "incidents_with_attack": 1,
+      "other_incidents": 0,
+      "one_incident": true,
+      "chain_recall": 1.0,
+      "time_to_first_alert_s": 0.0,
+      "mapping_accuracy": 1.0
+    },
+    "variant 6": {
+      "incidents_with_attack": 1,
+      "other_incidents": 0,
+      "one_incident": true,
+      "chain_recall": 1.0,
+      "time_to_first_alert_s": 0.0,
+      "mapping_accuracy": 1.0
+    },
+    "variant 7": {
+      "incidents_with_attack": 1,
+      "other_incidents": 1,
+      "one_incident": true,
+      "chain_recall": 1.0,
+      "time_to_first_alert_s": 0.0,
+      "mapping_accuracy": 1.0
+    },
+    "variant 8": {
+      "incidents_with_attack": 1,
+      "other_incidents": 0,
+      "one_incident": true,
+      "chain_recall": 1.0,
+      "time_to_first_alert_s": 0.0,
+      "mapping_accuracy": 1.0
+    },
+    "variant 9": {
+      "incidents_with_attack": 1,
+      "other_incidents": 0,
+      "one_incident": true,
+      "chain_recall": 1.0,
+      "time_to_first_alert_s": 0.0,
+      "mapping_accuracy": 1.0
+    },
+    "variant 10": {
+      "incidents_with_attack": 1,
+      "other_incidents": 0,
+      "one_incident": true,
+      "chain_recall": 1.0,
+      "time_to_first_alert_s": 0.0,
+      "mapping_accuracy": 1.0
+    }
+  },
+  "scorer": {
+    "evaluated": false,
+    "reason": "No module named 'torch'",
+    "recommend_enable": false
+  },
+  "performance": {
+    "events_per_sec": 54739.728238,
+    "note": "this machine, the detection engine over the held-out benign day; it varies between runs"
+  },
+  "not_measured_here": [
+    "unsafe_actions_stopped",
+    "fail_closed",
+    "ledger_quorum"
+  ],
+  "not_measured_note": "these are covered by the pytest suites in tests/response and tests/ledger, not by this run"
+}

@@ -1,0 +1,21 @@
+# Detection settings: the alert budget, the score thresholds and how signals are joined into incidents.
+# make calibrate (Part 8) sets thresholds.strong from the benign days; the other numbers are choices.
+budget: 5                  # incidents per window the analyst is willing to look at
+window_hours: 24
+thresholds:
+  weak: 0.99               # a baseline score at or above this keeps the event as a held signal
+  strong: 0.9999           # at or above this the signal opens or joins an incident by itself
+non_anchor_quota: 3        # incidents a score alone may open per rolling window (0.6 of the budget)
+correlation:
+  hops: 2                  # how far from the incident's entities a held signal may be promoted
+  hours_before: 24         # a held signal this much older than the incident's anchors can still be promoted
+  hours_after: 1           # ... and this much newer
+  join_hours: 24           # an anchor joins an open incident whose signals are at most this far away in time
+  held_per_entity: 200
+  held_hours: 24           # held signals older than this (in log time) are dropped
+  ignore_host_kinds: [domain-controller, file-server, proxy]   # servers everyone talks to do not link incidents
+chain:
+  ordinary_tokens: [auth:logon]   # normal behaviour whose timing may be odd: shown as matching in the chain
+scorer:
+  enabled: false           # the PyTorch scorer only supports incidents; turn it on only if make calibrate shows nothing gets worse
+  weak: 0.99               # a scorer score at or above this keeps a held signal (it never opens an incident by itself)
